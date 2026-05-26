@@ -1,25 +1,41 @@
 {
-  "last_updated": "2026-05-26T12:51:54.304Z",
+  "last_updated": "2026-05-26T...",
   "results": {
     "9:30 AM": {
       "set": "1551.80",
-      "value": "41095.87"
+      "value": "41095.87",
+      "modern": "05",
+      "internet": "05"
     },
-    "12:01 PM": {
-      "set": "1556.73",
-      "value": "33178.48"
+    "11:00 AM": {
+      "set": "1556.04",
+      "value": "26270.78",
+      "modern": "40",
+      "internet": "40"
     },
     "2:00 PM": {
       "set": "1561.89",
       "value": "29051.15",
-      "modern": "89",
-      "internet": "89"
+      "modern": "91",
+      "internet": "91"
+    },
+    "12:01 PM": {
+      "set": "1556.73",
+      "value": "33178.48",
+      "modern": "38",
+      "internet": "38"
+    },
+    "3:00 PM": {
+      "set": "1556.78",
+      "value": "45457.85",
+      "modern": "87",
+      "internet": "87"
     },
     "4:30 PM": {
       "set": "1553.36",
       "value": "58368.33",
-      "modern": "61",
-      "internet": "61"
+      "modern": "68",
+      "internet": "68"
     }
   }
 }
