@@ -32,10 +32,10 @@
       "internet": "97"
     },
     "4:30 PM": {
-      "set": "--",
-      "value": "--",
-      "modern": "--",
-      "internet": "--"
-    }
+  "set": "1570.95",
+  "value": "70314.08",
+  "modern": "54",
+  "internet": "54"
+}
   }
 }
