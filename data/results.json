@@ -1,5 +1,5 @@
 {
-  "last_updated": "2026-05-28T10:00:35.424Z",
+  "last_updated": "2026-05-28T10:01:34.377Z",
   "results": {
     "9:30 AM": {
       "set": "1555.50",
@@ -32,11 +32,11 @@
       "internet": "44"
     },
     "4:30 PM": {
-      "set": "--",
-      "value": "--",
-      "modern": "--",
-      "internet": "--"
+      "set": "1568.97",
+      "value": "62570.89",
+      "modern": "70",
+      "internet": "70"
     }
   },
-  "last_updated_mm": "28/05/2026, 16:30:35"
+  "last_updated_mm": "28/05/2026, 16:31:34"
 }
