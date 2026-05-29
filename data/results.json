@@ -1,5 +1,5 @@
 {
-  "last_updated": "2026-05-29T19:31:35.046Z",
+  "last_updated": "2026-05-29T19:32:27.476Z",
   "results": {
     "9:30 AM": {
       "set": "1579.79",
@@ -8,10 +8,13 @@
       "internet": "92"
     },
     "11:00 AM": {
-      "set": "1578.28",
-      "value": "27193.58",
-      "modern": "83",
-      "internet": "83"
+      "set": "--",
+      "value": "--",
+      "modern": "--",
+      "internet": "--",
+      "date": "2026-05-29",
+      "is_locked": false,
+      "status": "waiting"
     },
     "2:00 PM": {
       "set": "1573.49",
@@ -20,24 +23,38 @@
       "internet": "97"
     },
     "12:01 PM": {
-      "set": "1577.42",
-      "value": "35084.51",
-      "modern": "24",
-      "internet": "24"
+      "set": "--",
+      "value": "--",
+      "modern": "--",
+      "internet": "--",
+      "date": "2026-05-29",
+      "is_locked": false,
+      "status": "waiting"
     },
     "3:00 PM": {
-      "set": "1573.21",
-      "value": "48920.07",
-      "modern": "10",
-      "internet": "10"
+      "set": "--",
+      "value": "--",
+      "modern": "--",
+      "internet": "--",
+      "date": "2026-05-29",
+      "is_locked": false,
+      "status": "waiting"
     },
     "4:30 PM": {
-      "set": "1568.97",
-      "value": "62570.89",
-      "modern": "70",
-      "internet": "70",
-      "updated_at": "2026-05-29T19:31:35.046Z"
+      "set": "--",
+      "value": "--",
+      "modern": "--",
+      "internet": "--",
+      "date": "2026-05-29",
+      "is_locked": false,
+      "status": "waiting"
     }
   },
-  "last_updated_mm": "30/05/2026, 01:03:34"
+  "last_updated_mm": "30/05/2026, 01:03:34",
+  "latest_result": {
+    "set": "--",
+    "value": "--",
+    "modern": "",
+    "updated_at": "2026-05-29T19:32:27.476Z"
+  }
 }
