@@ -17,7 +17,6 @@
     .tab-btn { flex: 1; padding: 10px; border: none; background: transparent; font-weight: bold; border-radius: 8px; cursor: pointer; font-size: 0.85rem; color: #777; }
     .tab-btn.active { background: #3498db; color: #fff; }
 
-    /* Vertical List Style */
     .day-list { display: flex; flex-direction: column; gap: 6px; }
     .day-row { display: flex; align-items: center; justify-content: space-between; background: #fff; padding: 14px 16px; border-radius: 10px; box-shadow: 0 1px 3px rgba(0,0,0,0.08); cursor: pointer; transition: all 0.2s; }
     .day-row:active { transform: scale(0.98); background: #f0f4f8; }
@@ -29,7 +28,6 @@
     .dot { width: 8px; height: 8px; border-radius: 50%; }
     .dot-m { background: #e74c3c; } .dot-e { background: #2ecc71; }
 
-    /* Sticky Bottom Panel */
     .result-panel { position: fixed; bottom: 0; left: 0; right: 0; background: #fff; border-top: 1px solid #eee; padding: 12px 15px; box-shadow: 0 -4px 10px rgba(0,0,0,0.1); z-index: 100; max-height: 45vh; overflow-y: auto; border-radius: 16px 16px 0 0; }
     .result-box { display: none; }
     .result-box.active { display: block; animation: fadeIn 0.3s; }
@@ -57,7 +55,6 @@
   <div id="day-list" class="day-list"></div>
 </div>
 
-<!-- အောက်ခြေ ကပ်ပြမည့် Panel -->
 <div class="result-panel">
   <div id="res-all" class="result-box active"><div class="empty-msg">📅 ရက်စွဲတစ်ခုကို နှိပ်ပါ</div></div>
   <div id="res-morning" class="result-box"><div class="empty-msg">📅 ရက်စွဲတစ်ခုကို နှိပ်ပါ</div></div>
@@ -81,14 +78,18 @@
     const year = +ySel.value, month = +mSel.value;
     listDiv.innerHTML = '';
     const daysInMonth = new Date(year, month+1, 0).getDate();
-    const dayNames = ['တနင်္ဂနွေ', 'တနင်္လာ', 'အင်္ဂါ', 'ဗုဒ္ဓဟူး', 'ကြာသပတေး', 'သောကြာ', 'စနေ'];
+    
+    // ✅ တနင်္လာ=1, အင်္ဂါ=2, ဗုဒ္ဓဟူး=3, ကြာသပတေး=4, သောကြာ=5
+    const dayNames = ['','တနင်္လာ', 'အင်္ဂါ', 'ဗုဒ္ဓဟူး', 'ကြာသပတေး', 'သောကြာ'];
     
     for(let d=1; d<=daysInMonth; d++) {
       const dateObj = new Date(year, month, d);
-      const dayIndex = dateObj.getDay(); // 0=Sun, 6=Sat
+      const dayIndex = dateObj.getDay(); // 0=Sun, 1=Mon, ..., 6=Sat
       
-      // ✅ စနေ နဲ့ တနင်္ဂနွေ ကို ဖယ်ထုတ်မယ်
-      if (dayIndex === 0 || dayIndex === 6) continue;
+      // ✅✅✅ စနေ (6) နှင့် တနင်္ဂနွေ (0) ကို လုံးဝဖြုတ်မယ် ✅✅✅
+      if (dayIndex === 0 || dayIndex === 6) {
+        continue; // Skip Saturday and Sunday completely
+      }
       
       const dateKey = `${year}-${String(month+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
       const data = DATA[dateKey];
