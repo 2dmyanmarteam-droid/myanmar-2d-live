@@ -3,130 +3,161 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>2D Paper Sheet</title>
+  <title>2D Monthly Sheet</title>
   <style>
     * { box-sizing: border-box; }
-    body { font-family: 'Pyidaungsu', 'Myanmar Text', sans-serif; margin: 0; padding: 0; background: #f0f2f5; color: #333; }
+    body { font-family: 'Pyidaungsu', 'Myanmar Text', sans-serif; margin: 0; padding: 10px; background: #e8ecef; }
     
-    .container { max-width: 100%; padding: 10px; }
-    .sheet-title { text-align: center; font-size: 1.2rem; font-weight: bold; color: #003366; margin: 10px 0; letter-spacing: 1px; }
-    
-    /* ဇယားအိမ်ရာ (Scroll Wrapper) */
-    .sheet-wrapper {
+    .sheet-container {
       background: #fff;
+      max-width: 100%;
+      padding: 10px;
       border: 1px solid #ccc;
       border-radius: 8px;
-      overflow-x: auto; /* ဖုန်းနဲ့ ညာဘက်ဆွဲကြည့်နိုင်ရန် */
-      -webkit-overflow-scrolling: touch;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+      overflow-x: auto; /* ဖုန်းနဲ့ ဘေးဆွဲကြည့်နိုင်ရန် */
     }
 
-    /* စာရွက်ယားကွက် */
-    .trade-sheet {
+    .sheet-title { text-align: center; font-size: 16px; font-weight: bold; color: #003366; margin-bottom: 10px; }
+
+    .trade-grid {
       border-collapse: collapse;
       width: 100%;
-      min-width: 750px; /* ဇယားအကျယ်သေချာစေရန် */
+      min-width: 600px; /* ယားအကျယ် */
       font-size: 13px;
     }
 
-    .trade-sheet th, .trade-sheet td {
-      border: 1px solid #b0b0b0;
-      padding: 6px 4px;
+    .trade-grid th, .trade-grid td {
+      border: 1px solid #999;
+      padding: 8px;
       text-align: center;
-      white-space: nowrap;
+      vertical-align: top;
     }
 
-    .trade-sheet th {
-      background: #e8edf2;
-      color: #003366;
-      font-weight: 700;
-      position: sticky;
-      top: 0;
-      z-index: 2;
-    }
-
-    /* ပထမကော်လံ (နေ့အမည်) ကပ်နေစေရန် */
-    .day-col {
-      position: sticky;
-      left: 0;
-      background: #f8f9fa;
+    .trade-grid th {
+      background: #003366;
+      color: #fff;
       font-weight: bold;
-      z-index: 3;
-      min-width: 70px;
-      text-align: left !important;
-      padding-left: 10px !important;
-      border-right: 2px solid #999;
     }
 
-    .num-cell {
+    /* ရက်စွဲ ံပါတ် */
+    .date-num {
+      font-weight: bold;
+      font-size: 16px;
+      color: #333;
+      margin-bottom: 4px;
+    }
+
+    /* ဂဏန်းများ */
+    .num-val {
       font-family: monospace;
       font-weight: bold;
+      color: #d93025; /* နံနက် */
       font-size: 14px;
-      color: #111;
-      background: #fff;
     }
-    .num-cell.empty { color: #ccc; }
+    .num-val.evening { color: #188038; } /* ညနေ */
 
-    .mobile-hint { text-align: center; font-size: 12px; color: #666; margin-top: 8px; }
+    .empty-cell { background: #f9f9f9; color: #ccc; }
+    
+    .mobile-note { text-align: center; font-size: 12px; color: #666; margin-top: 10px; }
   </style>
 </head>
 <body>
-<div class="container">
-  <div class="sheet-title"> SPECIAL THAI SET TRADE NUMBERS</div>
+
+<div class="sheet-container">
+  <div class="sheet-title">SPECIAL THAI SET TRADE NUMBERS</div>
   
-  <div class="sheet-wrapper">
-    <table class="trade-sheet" id="sheetTable">
-      <thead>
-        <tr id="headerRow"></tr>
-      </thead>
-      <tbody id="bodyRows"></tbody>
-    </table>
-  </div>
-  <div class="mobile-hint">📱 ဇယားကြီးဖြစ်သဖြင့် ညာဘက်သို့ လက်နဲ့ဆွဲကြည့်ပါ</div>
+  <table class="trade-grid" id="monthTable">
+    <thead>
+      <tr>
+        <th>MON</th>
+        <th>TUE</th>
+        <th>WED</th>
+        <th>THU</th>
+        <th>FRI</th>
+      </tr>
+    </thead>
+    <tbody id="gridBody">
+      <!-- JavaScript ဖြင့် အပတ်လိုက် ဖြည့်မည် -->
+    </tbody>
+  </table>
+  
+  <div class="mobile-note">📱 ဇယားကြီးဖြစ်သဖြင့် ညာဘက်သို့ လက်နဲ့ဆွဲကြည့်ပါ</div>
 </div>
 
 <script>
   const JSON_URL = "https://raw.githubusercontent.com/2dmyanmarteam-droid/myanmar-2d-live/main/data/calendar-data.json";
-  const dayNames = ['','တနင်္လာ', 'အင်္ဂါ', 'ုဒ္ဓဟူး', 'ကြာသပတေး', 'သောကြာ'];
-  const headerRow = document.getElementById('headerRow');
-  const bodyRows = document.getElementById('bodyRows');
 
-  // 1. ခေါင်းစဉ် (1-31) ဖန်တီးခြင်း
-  headerRow.innerHTML = '<th class="day-col">DAY</th>';
-  for(let i=1; i<=31; i++) headerRow.innerHTML += `<th>${i}</th>`;
-
-  // 2. အတန်း (Mon-Fri) ဖန်တီးခြင်း
-  for(let d=1; d<=5; d++) {
-    let rowHtml = `<td class="day-col">${dayNames[d]}</td>`;
-    for(let c=1; c<=31; c++) {
-      rowHtml += `<td id="cell-${d}-${c}" class="num-cell empty">-</td>`;
-    }
-    const tr = document.createElement('tr');
-    tr.innerHTML = rowHtml;
-    bodyRows.appendChild(tr);
-  }
-
-  // 3. JSON ဒေတာ ဆွဲယူပြီး ဇယားထဲဖြည့်ခြင်း
   fetch(JSON_URL)
     .then(res => res.json())
     .then(data => {
-      for(const dateKey in data) {
-        const dateObj = new Date(dateKey);
-        const dow = dateObj.getDay(); // 1=Mon ... 5=Fri
-        const dom = dateObj.getDate(); // 1...31
+      const tbody = document.getElementById('gridBody');
+      const year = 2026; 
+      const month = 5; // June (0-indexed)
+      
+      // ၁ လ ရှိသမျှ ရက်များ
+      const daysInMonth = new Date(year, month + 1, 0).getDate();
+      
+      let currentDay = 1;
+      let row = document.createElement('tr');
 
-        if(dow >= 1 && dow <= 5 && dom <= 31) {
-          const cell = document.getElementById(`cell-${dow}-${dom}`);
-          if(cell) {
-            // ဂဏန်းထုတ်ယူ (မorning.set ရဲ့ ပထမဆုံးဂဏန်းကို ပြမယ်)
-            const num = data[dateKey].morning?.set?.[0] || '--';
-            cell.textContent = num;
-            cell.classList.remove('empty');
+      // ပထမရက်၏ နေ့ (0=Sun, 1=Mon...)
+      let firstDayOfWeek = new Date(year, month, 1).getDay();
+      // Mon(1) စဖို့ လိုအပ်သော ကွက်လပ်များ
+      let startOffset = (firstDayOfWeek === 0) ? 6 : firstDayOfWeek - 1;
+
+      // ကနး ကွက်လပ်များ ြည့်ခြင်း
+      for(let i=0; i<startOffset; i++) {
+        let td = document.createElement('td');
+        td.className = 'empty-cell';
+        row.appendChild(td);
+      }
+
+      // ရက်များ စီစ်ခြင်း
+      for(let d=1; d<=daysInMonth; d++) {
+        let dateObj = new Date(year, month, d);
+        let dow = dateObj.getDay(); // 0=Sun, 6=Sat
+
+        // စနေ/တနင်္ဂနွေ မဟုတ်မှ ဇယားထဲ ထည့်မည်
+        if(dow !== 0 && dow !== 6) {
+          let td = document.createElement('td');
+          
+          // Date Key
+          let dateKey = `${year}-${String(month+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+          let info = data[dateKey];
+          
+          let html = `<div class="date-num">${d}</div>`;
+          if(info) {
+            // ဂဏန်းများ ထည့်ခြင်း (Set Trade ကို ဥပမာယူသည်)
+            let mNum = info.morning?.set?.[0] || '';
+            let eNum = info.evening?.set?.[0] || '';
+            if(mNum) html += `<div class="num-val">${mNum}</div>`;
+            if(eNum) html += `<div class="num-val evening">${eNum}</div>`;
+          }
+          
+          td.innerHTML = html;
+          row.appendChild(td);
+
+          // သောကြာ (5) ရောက်လို့ Row ပြည့်ရင် Row အသစ် စမည်
+          if(dow === 5) {
+            tbody.appendChild(row);
+            row = document.createElement('tr');
           }
         }
       }
+      
+      // နောက်ဆုံး Row ကို ထည့်ခြင်း
+      if(row.children.length > 0) {
+         // နောက်ဆုံး Row မပြည့်ရင် ကွက်လပ်ဖြည့်ခြင်း
+         while(row.children.length < 5) {
+            let td = document.createElement('td');
+            td.className = 'empty-cell';
+            row.appendChild(td);
+         }
+         tbody.appendChild(row);
+      }
     })
-    .catch(err => console.error("Data load error:", err));
+    .catch(err => console.error(err));
 </script>
 </body>
 </html>
