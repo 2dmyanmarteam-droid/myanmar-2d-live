@@ -8,7 +8,7 @@
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body { 
       font-family: 'Pyidaungsu', 'Myanmar Text', sans-serif; 
-      background: #f0f0f0; 
+      background: #e0e0e0; 
       padding: 10px; 
     }
     
@@ -21,18 +21,19 @@
     }
 
     .header {
-      background: linear-gradient(135deg, #003366 0%, #0066cc 100%);
+      background: #003366;
       color: #fff;
       text-align: center;
-      padding: 12px;
+      padding: 10px;
       font-weight: bold;
-      font-size: 16px;
+      font-size: 14px;
       letter-spacing: 1px;
     }
 
+    /* ခလုတ်များ */
     .toggle-buttons {
       display: flex;
-      background: #e6e6e6;
+      background: #f0f0f0;
       padding: 8px;
       gap: 10px;
       justify-content: center;
@@ -41,14 +42,13 @@
     .toggle-btn {
       flex: 1;
       max-width: 200px;
-      padding: 10px;
+      padding: 8px;
       border: 2px solid #003366;
       background: #fff;
       color: #003366;
       font-weight: bold;
       cursor: pointer;
       border-radius: 5px;
-      transition: all 0.3s;
     }
 
     .toggle-btn.active {
@@ -64,31 +64,33 @@
     .trade-table {
       border-collapse: collapse;
       width: 100%;
-      min-width: 1200px;
+      min-width: 1000px;
       font-size: 11px;
     }
 
     .trade-table th, .trade-table td {
       border: 1px solid #b0c4de;
-      padding: 4px 3px;
+      padding: 4px 2px;
       text-align: center;
       white-space: nowrap;
-      min-width: 35px;
+      min-width: 30px;
     }
 
+    /* ခေါင်းစ်တန်း (အပြာရောင်နောက်ခံ + အဖြူစာသား) */
     .trade-table th {
       background: #003366;
-      color: #fff;
+      color: #ffffff; /* ✅ အဖြူရောင် */
       font-weight: bold;
       height: 30px;
-      font-size: 11px;
+      font-size: 10px;
     }
 
+    /* ဘယ်ဘက်ကော်လံ (Day) (အပြာရောင်နောက်ခံ + အဖြူစာသား) */
     .day-col {
       position: sticky;
       left: 0;
       background: #003366;
-      color: #fff;
+      color: #ffffff; /* ✅ အဖြူရောင် */
       font-weight: bold;
       z-index: 2;
       min-width: 60px;
@@ -99,15 +101,17 @@
       z-index: 3;
     }
 
+    /* ဂဏန်းများ */
     .num-cell {
       font-family: monospace;
       font-weight: bold;
-      font-size: 11px;
-      color: #d93025;
+      font-size: 12px;
+      color: #000000; /* ✅ အနက်ရောင် */
+      background: #ffffff;
     }
     
     .num-cell.evening {
-      color: #188038;
+      color: #008000; /* ✅ ညနေအတွက် အစိမ်းရောင် */
     }
 
     .mobile-hint {
@@ -134,6 +138,7 @@
       <thead>
         <tr id="headerRow">
           <th class="day-col">DAY</th>
+          <!-- 1-30 ကော်လံများ -->
         </tr>
       </thead>
       <tbody id="tableBody"></tbody>
@@ -148,7 +153,7 @@
   let currentData = {};
   let currentView = 'morning';
 
-  // ခေါင်းစဉ်တန်း (1-30)
+  // ခေါင်းစဉ်တန်း (1-30) ဖန်တီးခြင်း
   const headerRow = document.getElementById('headerRow');
   for(let i=1; i<=30; i++) {
     headerRow.innerHTML += `<th>${i}</th>`;
@@ -169,7 +174,7 @@
     
     let workingDayCount = 0;
     const year = 2026;
-    const month = 5;
+    const month = 5; // June
     const daysInMonth = new Date(year, month + 1, 0).getDate();
 
     for(let d=1; d<=daysInMonth && workingDayCount < 20; d++) {
@@ -192,16 +197,16 @@
       
       const tr = document.createElement('tr');
       
+      // ဘယ်ဘက်ကော်လံ (Day)
       const dayTd = document.createElement('td');
       dayTd.className = 'day-col';
       dayTd.innerHTML = `${workingDayCount}<br><small style="font-size:9px">${myanDayNames[dow]}</small>`;
       tr.appendChild(dayTd);
       
-      // ကော်လံအလိုက် ဂန်းများ ထည့်သွင်းခြင်း (1-30)
+      // ဂဏန်းများ (1-30)
       for(let col=1; col<=30; col++) {
         const td = document.createElement('td');
         td.className = 'num-cell' + (currentView === 'evening' ? ' evening' : '');
-        // numbers array ရဲ့ (col-1) index မှ ဂဏန်းကို ယူမယ်
         td.textContent = numbers[col-1] || '';
         tr.appendChild(td);
       }
