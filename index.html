@@ -52,7 +52,7 @@
   <div class="tabs">
     <button class="tab-btn active" onclick="switchTab('all', this)">🔄 နေ့/ည</button>
     <button class="tab-btn" onclick="switchTab('morning', this)">☀️ နေ့</button>
-    <button class="tab-btn" onclick="switchTab('evening', this)"> ညနေ</button>
+    <button class="tab-btn" onclick="switchTab('evening', this)">🌙 ညနေ</button>
   </div>
   <div id="day-list" class="day-list"></div>
 </div>
@@ -61,7 +61,7 @@
 <div class="result-panel">
   <div id="res-all" class="result-box active"><div class="empty-msg">📅 ရက်စွဲတစ်ခုကို နှိပ်ပါ</div></div>
   <div id="res-morning" class="result-box"><div class="empty-msg">📅 ရက်စွဲတစ်ခုကို နှိပ်ပါ</div></div>
-  <div id="res-evening" class="result-box"><div class="empty-msg"> ရက်စွဲတစ်ခုကို ှိပ်ပါ</div></div>
+  <div id="res-evening" class="result-box"><div class="empty-msg">📅 ရက်စွဲတစ်ခုကို နှိပ်ပါ</div></div>
 </div>
 
 <script>
@@ -85,7 +85,11 @@
     
     for(let d=1; d<=daysInMonth; d++) {
       const dateObj = new Date(year, month, d);
-      const dayIndex = dateObj.getDay();
+      const dayIndex = dateObj.getDay(); // 0=Sun, 6=Sat
+      
+      // ✅ စနေ နဲ့ တနင်္ဂနွေ ကို ဖယ်ထုတ်မယ်
+      if (dayIndex === 0 || dayIndex === 6) continue;
+      
       const dateKey = `${year}-${String(month+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
       const data = DATA[dateKey];
       
