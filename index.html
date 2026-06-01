@@ -22,7 +22,7 @@
     .day-row:active { transform: scale(0.98); background: #f0f4f8; }
     .day-row.active { background: #e8f4fd; border-left: 4px solid #3498db; box-shadow: 0 2px 6px rgba(52,152,219,0.2); }
     .day-info { display: flex; align-items: center; gap: 12px; }
-    .day-num { font-size: 1.3rem; font-weight: bold; color: #222; min-width: 40px; }
+    .day-num { font-size: 1.5rem; font-weight: bold; color: #222; min-width: 40px; text-align: center; } /* နံပါတ်ကို ဗဟိုထားမယ် */
     .day-name { font-size: 0.9rem; color: #666; min-width: 80px; font-weight: 500; }
     .dots { display: flex; gap: 5px; }
     .dot { width: 8px; height: 8px; border-radius: 50%; }
@@ -69,7 +69,7 @@
   const listDiv = document.getElementById('day-list');
   
   for(let y=2023; y<=2026; y++) ySel.innerHTML += `<option value="${y}" ${y==2026?'selected':''}>${y}</option>`;
-  const months = ["ဇန်နဝါရီ","ဖေဖော်ဝါရီ","မတ်","ဧပြီ","မေ","ဇွန်","ဇူလိုင်","သြဂုတ်","စက်တင်ဘာ","အောက်တိုဘာ","နိုဝင်ဘာ","ဒီဇင်ဘာ"];
+  const months = ["ဇန်နဝါရီ","ဖေဖော်ဝါရီ","မတ်","ဧပြီ","မေ","ဇွန်","ူလိုင်","သြဂုတ်","စက်တင်ဘာ","အောက်တိုဘာ","နိုဝင်ဘာ","ဒီဇင်ဘာ"];
   months.forEach((m,i) => mSel.innerHTML += `<option value="${i}" ${i==5?'selected':''}>${m}</option>`);
 
   fetch(JSON_URL).then(res => res.json()).then(json => { DATA = json; buildList(); }).catch(err => console.error(err));
@@ -80,9 +80,12 @@
     const daysInMonth = new Date(year, month+1, 0).getDate();
     
     const dayNames = ['တနင်္လာ', 'အင်္ဂါ', 'ဗုဒ္ဓဟူး', 'ကြာသပတေး', 'သောကြာ'];
-    let counter = 1; // ✅ အစဉ်လိုက် နံပါတ် ၁ ကနေ စမယ်
+    let counter = 1; // ✅ ၁ ကနေ စမယ်
     
     for(let d=1; d<=daysInMonth; d++) {
+      // ✅ ၂၀ ပြည့်ရင် ချက်ချင်းရပ်မယ်
+      if(counter > 20) break; 
+
       const dateObj = new Date(year, month, d);
       const dayOfWeek = dateObj.getDay(); // 0=Sun, 1=Mon, ..., 6=Sat
       
@@ -100,7 +103,7 @@
       row.innerHTML = `
         <div class="day-info">
           <span class="day-name">${dayNames[dayIndex]}</span>
-          <span class="day-num">${counter}</span> ✅ အစဉ်လိုက် နံပါတ်
+          <span class="day-num">${counter}</span> ✅ အစဉ်လိုက် နံပါတ် (၁-၂၀)
         </div>
         <div class="dots">
           ${data?.set_numbers?.length ? '<span class="dot dot-m"></span>' : ''}
@@ -110,8 +113,7 @@
       if(data) row.onclick = () => showDetail(dateKey, row);
       listDiv.appendChild(row);
       
-      counter++; // ✅ တစ်ကြောင်းပြီးတိုင်း ၁ တိုးမယ်
-      if(counter > 20) break; // ✅ ၂၀ ဆိုရင် ရပ်မယ်
+      counter++; // ✅ ပြီးမှ ၁ တိုးမယ်
     }
     document.querySelectorAll('.result-box').forEach(b => b.innerHTML = '<div class="empty-msg">📅 ရက်စွဲတစ်ခုကို နှိပ်ပါ</div>');
   }
@@ -134,7 +136,7 @@
       <div class="num-grid morning">${createGrid(d.set_numbers)}</div>
       <div class="group-title" style="color:#2ecc71; margin-top:8px">🌙 Internet (ညနေ)</div>
       <div class="num-grid evening">${createGrid(d.internet_numbers)}</div>
-      <div class="group-title" style="color:#f39c12; margin-top:8px">🔢 Modern (Special)</div>
+      <div class="group-title" style="color:#f39c12; margin-top:8px"> Modern (Special)</div>
       <div class="num-grid">${createGrid(d.modern_numbers)}</div>
     `;
     document.getElementById('res-all').innerHTML = allHtml;
