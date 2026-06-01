@@ -78,22 +78,19 @@
     const year = +ySel.value, month = +mSel.value;
     listDiv.innerHTML = '';
     const daysInMonth = new Date(year, month+1, 0).getDate();
-    
-    // ✅ တနင်္လာ=1, အင်္ဂါ=2, ဗုဒ္ဓဟူး=3, ကြာသပတေး=4, သောကြာ=5
     const dayNames = ['','တနင်္လာ', 'အင်္ဂါ', 'ဗုဒ္ဓဟူး', 'ကြာသပတေး', 'သောကြာ'];
     
+    // ✅ အကန့်အသတ်မရှိ - လတိုင်း ရက်အကုန်ပြမယ်
     for(let d=1; d<=daysInMonth; d++) {
       const dateObj = new Date(year, month, d);
-      const dayIndex = dateObj.getDay(); // 0=Sun, 1=Mon, ..., 6=Sat
-      
-      // ✅✅✅ စနေ (6) နှင့် တနင်္ဂနွေ (0) ကို လုံးဝဖြုတ်မယ် ✅✅✅
-      if (dayIndex === 0 || dayIndex === 6) {
-        continue; // Skip Saturday and Sunday completely
-      }
-      
+      const dayIndex = dateObj.getDay();
+
+      // ✅ စနေ/တနင်္ဂနွေ ဖြုတ်မယ်
+      if (dayIndex === 0 || dayIndex === 6) continue;
+
       const dateKey = `${year}-${String(month+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
       const data = DATA[dateKey];
-      
+
       const row = document.createElement('div');
       row.className = 'day-row';
       row.innerHTML = `
