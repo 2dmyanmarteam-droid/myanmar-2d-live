@@ -3,159 +3,226 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Thai 2D Calendar Sheet</title>
+  <title>Thai 2D Calendar</title>
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
-    body { font-family: sans-serif; background: #f0f0f0; padding: 10px; }
+    body { 
+      font-family: 'Pyidaungsu', 'Myanmar Text', sans-serif; 
+      background: #f0f0f0; 
+      padding: 10px; 
+    }
     
-    /* စာရွက်ကြီး Container */
-    .paper-container {
-      background: #fff;
+    .container {
       max-width: 100%;
-      overflow-x: auto; /* ဖုန်းနဲ့ ဘေးဆွဲကြည့်နိုင်ရန် */
+      background: #fff;
       border: 1px solid #999;
-      box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+      box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+      overflow: hidden;
     }
 
-    /* ခေါင်းစဉ် */
-    .sheet-header {
-      background: #e6f2ff;
-      color: #004080;
+    .header {
+      background: linear-gradient(135deg, #003366 0%, #0066cc 100%);
+      color: #fff;
       text-align: center;
-      padding: 8px;
+      padding: 12px;
       font-weight: bold;
       font-size: 16px;
-      border-bottom: 2px solid #004080;
+      letter-spacing: 1px;
     }
 
-    /* ဇယားကွက် */
+    /* ခလုတ်များ */
+    .toggle-buttons {
+      display: flex;
+      background: #e6e6e6;
+      padding: 8px;
+      gap: 10px;
+      justify-content: center;
+    }
+
+    .toggle-btn {
+      flex: 1;
+      max-width: 200px;
+      padding: 10px;
+      border: 2px solid #003366;
+      background: #fff;
+      color: #003366;
+      font-weight: bold;
+      cursor: pointer;
+      border-radius: 5px;
+      transition: all 0.3s;
+    }
+
+    .toggle-btn.active {
+      background: #003366;
+      color: #fff;
+    }
+
+    /* ဇယား */
+    .table-wrapper {
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+    }
+
     .trade-table {
       border-collapse: collapse;
       width: 100%;
-      min-width: 800px; /* ဇယားအကျယ်သေချာစေရန် */
-      font-size: 11px; /* စာလုံးသေးသေးလေးနဲ့ စည်းကမ်းကျကျ */
+      min-width: 900px;
+      font-size: 11px;
     }
 
     .trade-table th, .trade-table td {
       border: 1px solid #b0c4de;
-      padding: 4px 2px;
+      padding: 3px 2px;
       text-align: center;
-      vertical-align: top;
-      white-space: pre-wrap; /* ဂဏန်းများကို အတန်းလိုက် ပြရန် */
+      white-space: nowrap;
     }
 
-    /* ခေါင်းစဉ်တန်း (1-31) */
     .trade-table th {
       background: #003366;
       color: #fff;
       font-weight: bold;
-      height: 25px;
+      height: 28px;
+      font-size: 10px;
     }
 
-    /* ဘယ်ဘက် ကော်လံ (MON, TUE...) */
-    .row-header {
+    /* ပထမကော်လံ (ကပ်နေ) */
+    .day-col {
+      position: sticky;
+      left: 0;
       background: #003366;
       color: #fff;
       font-weight: bold;
-      width: 40px;
-      position: sticky;
-      left: 0;
       z-index: 2;
+      min-width: 70px;
+      text-align: center !important;
+    }
+
+    .trade-table thead .day-col {
+      z-index: 3;
     }
 
     /* ဂဏန်းများ */
-    .cell-content {
-      color: #000;
-      line-height: 1.2;
+    .num-cell {
+      font-family: monospace;
+      font-weight: bold;
+      font-size: 11px;
     }
-    .cell-content b { color: #d93025; } /* ထူးထူးခြားခြား ပြချင်ရင် */
 
-    /* စနေ/တနင်္ဂနွေ နေရာလွတ် (ပိတ်ရက်) */
-    .holiday-cell {
-      background: #f4f4f4;
-      color: #ccc;
+    .mobile-hint {
+      text-align: center;
+      font-size: 11px;
+      color: #666;
+      padding: 5px;
+      background: #f9f9f9;
     }
   </style>
 </head>
 <body>
 
-<div class="paper-container">
-  <div class="sheet-header">SPECIAL THAI TWO DIGIT NUMBERS CALENDAR</div>
+<div class="container">
+  <div class="header">SPECIAL THAI TWO DIGIT NUMBERS CALENDAR</div>
   
-  <table class="trade-table" id="calendarSheet">
-    <thead>
-      <tr id="headerRow">
-        <th>DAY</th>
-        <!-- 1 မှ 31 အထိ JS ဖြင့် ဖြည့်မည် -->
-      </tr>
-    </thead>
-    <tbody id="tableBody">
-      <!-- MON, TUE, WED, THU, FRI အတန်းများ -->
-    </tbody>
-  </table>
+  <div class="toggle-buttons">
+    <button class="toggle-btn active" onclick="switchView('morning', this)">☀️ နံနက် (9:30 AM)</button>
+    <button class="toggle-btn" onclick="switchView('evening', this)">🌙 ညနေ (4:30 PM)</button>
+  </div>
+
+  <div class="table-wrapper">
+    <table class="trade-table" id="calendarTable">
+      <thead>
+        <tr id="headerRow">
+          <th class="day-col">DAY</th>
+          <!-- 1-30 ကော်လံများ -->
+        </tr>
+      </thead>
+      <tbody id="tableBody">
+        <!-- JavaScript ဖြင့် ဖြည့်မည် -->
+      </tbody>
+    </table>
+  </div>
+  
+  <div class="mobile-hint">📱 ယားကျယ်သဖြင့် ညာဘက်သို့ လက်နဲ့ဆွဲကြည့်ပါ</div>
 </div>
 
 <script>
-  // ဇယားခေါင်းစဉ် (1-31) ထည့်ခြင်း
+  const JSON_URL = "https://raw.githubusercontent.com/2dmyanmarteam-droid/myanmar-2d-live/main/data/calendar-data.json";
+  let currentData = {};
+  let currentView = 'morning';
+
+  // ခေါင်းစဉ်တန်း (1-30)
   const headerRow = document.getElementById('headerRow');
-  for(let i=1; i<=31; i++) {
+  for(let i=1; i<=30; i++) {
     headerRow.innerHTML += `<th>${i}</th>`;
   }
 
-  // အတန်း () တန်း ဖန်တီးခြင်း (Mon-Fri)
-  const days = ['MON', 'TUE', 'WED', 'THU', 'FRI'];
-  const tableBody = document.getElementById('tableBody');
-  
-  days.forEach((dayName, index) => {
-    const tr = document.createElement('tr');
-    // ဘယ်ဘက် ခေါင်းစဉ်
-    tr.innerHTML = `<td class="row-header">${dayName}</td>`;
+  function switchView(view, btn) {
+    currentView = view;
+    document.querySelectorAll('.toggle-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    buildTable();
+  }
+
+  function buildTable() {
+    const tbody = document.getElementById('tableBody');
+    tbody.innerHTML = '';
     
-    //  မှ ၃၁ အထိ ကွက်လပ်များ
-    for(let d=1; d<=31; d++) {
-      // တစ်လရဲ့ ရက်စွဲနဲ့ နေ့ ကိုက်ညီမှု ရှိ/မရှိ စစ်ဆေးရန်
-      // ဥပမာ: MON တန်းမှာ ရက် ၁, ၈, ၅... ပဲ ပြမယ်
-      tr.innerHTML += `<td id="cell-${index}-${d}" class="cell-content"></td>`;
+    const dayNames = ['','MON', 'TUE', 'WED', 'THU', 'FRI'];
+    const myanDayNames = ['','တနင်္လာ', 'အင်္ဂါ', 'ဗုဒ္ဓဟူး', 'ကြာသပတေး', 'သောကြာ'];
+    
+    let workingDayCount = 0;
+    const year = 2026;
+    const month = 5; // June
+    const daysInMonth = new Date(year, month + 1, 0).getDate();
+
+    for(let d=1; d<=daysInMonth && workingDayCount < 20; d++) {
+      const dateObj = new Date(year, month, d);
+      const dow = dateObj.getDay();
+      
+      // စနေ (6) နှင့် တနင်္ဂနွေ (0) ကို ကျော်မည်
+      if(dow === 0 || dow === 6) continue;
+      
+      workingDayCount++;
+      
+      const dateKey = `${year}-${String(month+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+      const info = currentData[dateKey] || {};
+      
+      // ဂဏန်းများ ရွေးချယ်ခြင်း
+      let numbers = [];
+      if(currentView === 'morning') {
+        numbers = info.morning?.set || [];
+      } else {
+        numbers = info.evening?.set || [];
+      }
+      
+      const tr = document.createElement('tr');
+      
+      // ပထမကော်လံ (ရက်စွဲ + နေ့)
+      const dayTd = document.createElement('td');
+      dayTd.className = 'day-col';
+      dayTd.innerHTML = `${workingDayCount}<br><small>${myanDayNames[dow]}</small>`;
+      tr.appendChild(dayTd);
+      
+      // ဂဏန်းများ (1-30)
+      for(let i=0; i<30; i++) {
+        const td = document.createElement('td');
+        td.className = 'num-cell';
+        td.textContent = numbers[i] || '';
+        tr.appendChild(td);
+      }
+      
+      tbody.appendChild(tr);
     }
-    tableBody.appendChild(tr);
-  });
+  }
 
-  // ဒေတာဖြည့်သွင်းခြင်း (ဥပမာ - မင်း JSON ထဲက ဂဏန်းတွေ)
-  // မင်းရဲ့ JSON format နဲ့ ကိုက်ညီအောင် ပြင်ဆင်ပေးထားပါတယ်
-  const sampleData = {
-     "2026-06-01": { morning: { set: ["84", "65", "34", "99", "64"] } },
-     "2026-06-02": { morning: { set: ["73", "92", "22", "20", "47"] } },
-     // ... အခြားရက်များ ...
-  };
-
-  // တကယ့် JSON ကို ဆွဲယူခြင်း
-  const JSON_URL = "https://raw.githubusercontent.com/2dmyanmarteam-droid/myanmar-2d-live/main/data/calendar-data.json";
-  
+  // JSON ဒေတာ ဆွဲယူခြင်း
   fetch(JSON_URL)
     .then(res => res.json())
     .then(data => {
-      for(const dateKey in data) {
-        const dateObj = new Date(dateKey);
-        const dayOfMonth = dateObj.getDate(); // 1-31
-        const dayOfWeek = dateObj.getDay(); // 0=Sun, 1=Mon... 5=Fri, 6=Sat
-
-        // စနေ (6) နဲ့ တနင်္ဂနွေ (0) ကို ဖြုတ်ထားပြီးသား ဇယားဖြစ်လို့
-        // Mon(1) ကို Row 0, Tue(2) ကို Row 1... အနေနဲ့ ညှိမယ်
-        if(dayOfWeek >= 1 && dayOfWeek <= 5) {
-          const rowIndex = dayOfWeek - 1; // 0 to 4
-          const colIndex = dayOfMonth;    // 1 to 31
-          
-          const cell = document.getElementById(`cell-${rowIndex}-${colIndex}`);
-          if(cell) {
-            // ဂဏန်းများကို ထည့်သွင်းခြင်း (Set Trade အဓိကထား)
-            // မင်းလိုချင်ရင် Internet numbers တွေကိုပါ ထပ်ထည့်နိုင်ပါတယ်
-            let nums = data[dateKey].morning?.set || [];
-            cell.innerHTML = nums.join(" "); // ဂဏန်းတွေကို စီစီညာညာ ပြမယ်
-          }
-        }
-      }
+      currentData = data;
+      buildTable();
     })
-    .catch(err => console.error(err));
+    .catch(err => console.error("Error:", err));
 </script>
+
 </body>
 </html>
