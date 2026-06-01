@@ -3,156 +3,130 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>2D Paper View</title>
+  <title>2D Paper Sheet</title>
   <style>
-    body { font-family: 'Pyidaungsu', 'Myanmar Text', sans-serif; margin: 0; padding: 10px; background: #e0e0e0; }
+    * { box-sizing: border-box; }
+    body { font-family: 'Pyidaungsu', 'Myanmar Text', sans-serif; margin: 0; padding: 0; background: #f0f2f5; color: #333; }
     
-    /* စာရွက်ပုံစံ Container */
-    .paper-sheet {
-      background: white;
-      max-width: 100%;
-      overflow-x: auto; /* ုန်းနဲ့ဆို ဘေးတိုက်ဆွဲကြည့်နိုင်အောင် */
-      padding: 10px;
+    .container { max-width: 100%; padding: 10px; }
+    .sheet-title { text-align: center; font-size: 1.2rem; font-weight: bold; color: #003366; margin: 10px 0; letter-spacing: 1px; }
+    
+    /* ဇယားအိမ်ရာ (Scroll Wrapper) */
+    .sheet-wrapper {
+      background: #fff;
       border: 1px solid #ccc;
-      box-shadow: 0 0 10px rgba(0,0,0,0.2);
+      border-radius: 8px;
+      overflow-x: auto; /* ဖုန်းနဲ့ ညာဘက်ဆွဲကြည့်နိုင်ရန် */
+      -webkit-overflow-scrolling: touch;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
     }
 
-    .paper-header {
-      text-align: center;
-      color: #003366;
-      font-weight: bold;
-      font-size: 16px;
-      margin-bottom: 10px;
-      border-bottom: 2px solid #003366;
-      padding-bottom: 5px;
-    }
-
-    /* ဇယားကွက် ပုံစံ */
-    .trade-table {
-      width: 100%;
+    /* စာရွက်ယားကွက် */
+    .trade-sheet {
       border-collapse: collapse;
-      font-size: 12px;
-      min-width: 600px; /* ကွန်ပျူတာမှာ အကျယ်ကြီး ပေါ်အောင် */
+      width: 100%;
+      min-width: 750px; /* ဇယားအကျယ်သေချာစေရန် */
+      font-size: 13px;
     }
 
-    .trade-table th, .trade-table td {
-      border: 1px solid #999;
-      padding: 4px;
+    .trade-sheet th, .trade-sheet td {
+      border: 1px solid #b0b0b0;
+      padding: 6px 4px;
       text-align: center;
+      white-space: nowrap;
     }
 
-    .trade-table th {
-      background-color: #f0f0f0;
-      color: #333;
-      font-weight: bold;
+    .trade-sheet th {
+      background: #e8edf2;
+      color: #003366;
+      font-weight: 700;
+      position: sticky;
+      top: 0;
+      z-index: 2;
     }
 
-    /* တနင်္လာ-သောကြာ အရောင်ခွဲခြား */
-    .row-mon { background-color: #fff; }
-    .row-tue { background-color: #f9f9f9; }
-    .row-wed { background-color: #fff; }
-    .row-thu { background-color: #f9f9f9; }
-    .row-fri { background-color: #fff; }
-
-    .day-label {
+    /* ပထမကော်လံ (နေ့အမည်) ကပ်နေစေရန် */
+    .day-col {
+      position: sticky;
+      left: 0;
+      background: #f8f9fa;
       font-weight: bold;
+      z-index: 3;
+      min-width: 70px;
       text-align: left !important;
       padding-left: 10px !important;
-      width: 60px;
-    }
-    
-    .num-cell {
-      font-family: monospace;
-      font-size: 14px;
-      font-weight: bold;
-      color: #000;
-    }
-    
-    .empty-cell {
-      background-color: #eee;
+      border-right: 2px solid #999;
     }
 
-    /* ဖုန်းအတွက် သတိပေးချက် */
-    .mobile-note {
-      font-size: 12px;
-      color: #666;
-      text-align: center;
-      margin-top: 5px;
+    .num-cell {
+      font-family: monospace;
+      font-weight: bold;
+      font-size: 14px;
+      color: #111;
+      background: #fff;
     }
+    .num-cell.empty { color: #ccc; }
+
+    .mobile-hint { text-align: center; font-size: 12px; color: #666; margin-top: 8px; }
   </style>
 </head>
 <body>
-
-<div class="paper-sheet">
-  <div class="paper-header">SPECIAL THAI SET TRADE NUMBERS</div>
+<div class="container">
+  <div class="sheet-title"> SPECIAL THAI SET TRADE NUMBERS</div>
   
-  <!-- ဇယားကြီး -->
-  <table class="trade-table" id="paperTable">
-    <thead>
-      <tr id="headerRow">
-        <th>Day</th>
-        <!-- 1 ကနေ 31 အထိ ကော်လံတွေ JS နဲ့ ြည့်မယ် -->
-      </tr>
-    </thead>
-    <tbody>
-      <tr class="row-mon"><td class="day-label">MON</td><td id="mon-1"></td><td id="mon-2"></td>...</tr>
-      <tr class="row-tue"><td class="day-label">TUE</td><td id="tue-1"></td><td id="tue-2"></td>...</tr>
-      <tr class="row-wed"><td class="day-label">WED</td><td id="wed-1"></td><td id="wed-2"></td>...</tr>
-      <tr class="row-thu"><td class="day-label">THU</td><td id="thu-1"></td><td id="thu-2"></td>...</tr>
-      <tr class="row-fri"><td class="day-label">FRI</td><td id="fri-1"></td><td id="fri-2"></td>...</tr>
-    </tbody>
-  </table>
-  
-  <div class="mobile-note">📱 ဇယားကြီးဖြစ်လို့ ဘေးဘက်ကို ဆွဲကြည့်ပါ</div>
+  <div class="sheet-wrapper">
+    <table class="trade-sheet" id="sheetTable">
+      <thead>
+        <tr id="headerRow"></tr>
+      </thead>
+      <tbody id="bodyRows"></tbody>
+    </table>
+  </div>
+  <div class="mobile-hint">📱 ဇယားကြီးဖြစ်သဖြင့် ညာဘက်သို့ လက်နဲ့ဆွဲကြည့်ပါ</div>
 </div>
 
 <script>
-  // JSON URL (မင်းရဲ့ GitHub Link)
   const JSON_URL = "https://raw.githubusercontent.com/2dmyanmarteam-droid/myanmar-2d-live/main/data/calendar-data.json";
-
-  // ဇယားခေါင်းစဉ် (1-31) ဖန်တီးခြင်း
+  const dayNames = ['','တနင်္လာ', 'အင်္ဂါ', 'ုဒ္ဓဟူး', 'ကြာသပတေး', 'သောကြာ'];
   const headerRow = document.getElementById('headerRow');
-  for(let i=1; i<=31; i++) {
-    const th = document.createElement('th');
-    th.textContent = i;
-    headerRow.appendChild(th);
+  const bodyRows = document.getElementById('bodyRows');
+
+  // 1. ခေါင်းစဉ် (1-31) ဖန်တီးခြင်း
+  headerRow.innerHTML = '<th class="day-col">DAY</th>';
+  for(let i=1; i<=31; i++) headerRow.innerHTML += `<th>${i}</th>`;
+
+  // 2. အတန်း (Mon-Fri) ဖန်တီးခြင်း
+  for(let d=1; d<=5; d++) {
+    let rowHtml = `<td class="day-col">${dayNames[d]}</td>`;
+    for(let c=1; c<=31; c++) {
+      rowHtml += `<td id="cell-${d}-${c}" class="num-cell empty">-</td>`;
+    }
+    const tr = document.createElement('tr');
+    tr.innerHTML = rowHtml;
+    bodyRows.appendChild(tr);
   }
 
+  // 3. JSON ဒေတာ ဆွဲယူပြီး ဇယားထဲဖြည့်ခြင်း
   fetch(JSON_URL)
     .then(res => res.json())
     .then(data => {
-      // Data တွေကို ဇယားထဲ ြည့်သွင်းခြင်း
       for(const dateKey in data) {
-        // dateKey = "2026-06-01"
         const dateObj = new Date(dateKey);
-        const dayOfMonth = dateObj.getDate(); // 1, 2, 3...
-        const dayOfWeek = dateObj.getDay(); // 0=Sun, 1=Mon...
+        const dow = dateObj.getDay(); // 1=Mon ... 5=Fri
+        const dom = dateObj.getDate(); // 1...31
 
-        // စနေ (6) ဲ့ တနင်္ဂနွေ (0) ကို ဖယ်ထုတ် (ပိတ်ရက်မို့)
-        if(dayOfWeek === 0 || dayOfWeek === 6) continue;
-
-        // ဂဏန်းထုတ်ယူခြင်း (Morning Set ကို ဥပမာယူမယ်)
-        // မင်းရဲ့ JSON structure အတိုင်း နေရာယူပါ
-        let num = data[dateKey].morning?.set?.[0] || "--"; 
-        
-        // ဇယားထဲ ထည့်မယ် (ဥပမာ: mon-1, tue-2)
-        let rowPrefix = "";
-        if(dayOfWeek === 1) rowPrefix = "mon";
-        else if(dayOfWeek === 2) rowPrefix = "tue";
-        else if(dayOfWeek === 3) rowPrefix = "wed";
-        else if(dayOfWeek === 4) rowPrefix = "thu";
-        else if(dayOfWeek === 5) rowPrefix = "fri";
-
-        const cellId = `${rowPrefix}-${dayOfMonth}`;
-        const cell = document.getElementById(cellId);
-        if(cell) {
-          cell.textContent = num;
-          cell.classList.add('num-cell');
+        if(dow >= 1 && dow <= 5 && dom <= 31) {
+          const cell = document.getElementById(`cell-${dow}-${dom}`);
+          if(cell) {
+            // ဂဏန်းထုတ်ယူ (မorning.set ရဲ့ ပထမဆုံးဂဏန်းကို ပြမယ်)
+            const num = data[dateKey].morning?.set?.[0] || '--';
+            cell.textContent = num;
+            cell.classList.remove('empty');
+          }
         }
       }
     })
-    .catch(err => console.error("Error loading data", err));
+    .catch(err => console.error("Data load error:", err));
 </script>
-
 </body>
 </html>
