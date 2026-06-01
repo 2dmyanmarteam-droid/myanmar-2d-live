@@ -2,130 +2,96 @@
 <html lang="my">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>2D Calendar View</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>2D Special Calendar</title>
   <style>
-    :root { --bg:#f4f6f9; --card:#fff; --primary:#2c3e50; --m:#e74c3c; --i:#2ecc71; --s:#f39c12; }
-    body { font-family: 'Pyidaungsu', 'Myanmar Text', sans-serif; background: var(--bg); margin: 0; padding: 15px; color: #333; }
-    .header { text-align: center; margin-bottom: 15px; }
-    .controls { display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; margin-bottom: 15px; }
-    select, button { padding: 8px 12px; border: 1px solid #ccc; border-radius: 6px; background: var(--card); font-size: 14px; cursor: pointer; }
-    button { background: var(--primary); color: #fff; border: none; }
-    
-    #calendar { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; max-width: 800px; margin: 0 auto 20px; }
-    .day-head { background: var(--primary); color: #fff; padding: 6px; text-align: center; font-size: 0.9em; }
-    .day-cell { background: var(--card); border: 1px solid #e0e0e0; min-height: 45px; display: flex; align-items: center; justify-content: center; cursor: pointer; border-radius: 4px; position: relative; transition: 0.2s; }
-    .day-cell:hover { background: #e8f0fe; transform: scale(1.02); }
-    .day-cell.active { border: 2px solid var(--primary); background: #dce8f7; }
-    .dot { width: 6px; height: 6px; border-radius: 50%; position: absolute; bottom: 4px; }
-    .dot-m { left: 6px; background: var(--m); } .dot-i { left: 14px; background: var(--i); } .dot-s { right: 6px; background: var(--s); }
-
-    #detail { display: none; max-width: 800px; margin: 0 auto; background: var(--card); padding: 15px; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
-    .grid-3 { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 10px; margin-top: 10px; }
-    .box { padding: 10px; border-radius: 6px; border-left: 4px solid #ccc; }
-    .box-m { border-color: var(--m); background: #fdf2f2; }
-    .box-i { border-color: var(--i); background: #f2fdf5; }
-    .box-s { border-color: var(--s); background: #fdf8f0; }
-    .box h4 { margin: 0 0 6px; font-size: 0.95em; color: #555; }
-    .nums { font-weight: bold; font-size: 1.1em; letter-spacing: 1px; color: #222; }
-    .load { text-align: center; padding: 20px; color: #666; }
+    body { font-family: 'Pyidaungsu', 'Myanmar Text', sans-serif; margin: 0; padding: 0; background: #f0f2f5; color: #333; }
+    .container { max-width: 100%; padding: 10px; box-sizing: border-box; }
+    .header { text-align: center; padding: 10px 0; background: #ffffff; box-shadow: 0 2px 5px rgba(0,0,0,0.05); margin-bottom: 10px; border-radius: 0 0 10px 10px; }
+    .header h2 { margin: 0; font-size: 1.2rem; color: #2c3e50; }
+    .selectors { display: flex; gap: 5px; justify-content: center; margin-bottom: 10px; }
+    select { padding: 8px; border-radius: 5px; border: 1px solid #ccc; font-size: 1rem; width: 45%; }
+    #calendar { display: grid; grid-template-columns: repeat(7, 1fr); gap: 3px; background: #fff; padding: 5px; border-radius: 8px; margin-bottom: 10px; }
+    .day-head { text-align: center; font-weight: bold; padding: 5px 0; background: #2c3e50; color: #fff; font-size: 0.8rem; border-radius: 3px; }
+    .day-cell { background: #fff; border: 1px solid #eee; min-height: 40px; display: flex; align-items: center; justify-content: center; cursor: pointer; font-weight: bold; border-radius: 4px; position: relative; }
+    .day-cell.active { background: #3498db; color: #fff; border-color: #2980b9; transform: scale(1.05); z-index: 2; box-shadow: 0 2px 5px rgba(0,0,0,0.2); }
+    .dot { width: 6px; height: 6px; border-radius: 50%; position: absolute; bottom: 3px; }
+    .dot-m { left: 4px; background: #e74c3c; } .dot-e { left: 12px; background: #2ecc71; }
+    .tabs { display: flex; background: #fff; border-radius: 25px; padding: 3px; margin-bottom: 10px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+    .tab-btn { flex: 1; padding: 10px 0; border: none; background: transparent; font-weight: bold; border-radius: 20px; cursor: pointer; font-size: 0.9rem; color: #777; transition: 0.3s; }
+    .tab-btn.active { background: #3498db; color: #fff; box-shadow: 0 2px 5px rgba(52, 152, 219, 0.4); }
+    .result-box { background: #fff; border-radius: 10px; padding: 15px; box-shadow: 0 2px 8px rgba(0,0,0,0.05); display: none; }
+    .result-box.active { display: block; animation: fadeIn 0.3s ease; }
+    .group-title { font-size: 0.85rem; color: #888; margin-bottom: 5px; font-weight: bold; }
+    .num-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
+    .num-item { background: #f8f9fa; padding: 8px 2px; text-align: center; border-radius: 5px; font-weight: bold; font-size: 1.1rem; color: #333; border: 1px solid #eee; }
+    .morning .num-item { border-left: 3px solid #e74c3c; }
+    .evening .num-item { border-left: 3px solid #2ecc71; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
   </style>
 </head>
 <body>
-
-<div class="header">
-  <h2>📅 2D Special Calendar</h2>
-</div>
-
-<div class="controls">
-  <select id="yearSel"></select>
-  <select id="monthSel"></select>
-  <button onclick="buildCalendar()">🔍 ရှာမည်</button>
-</div>
-
-<div id="calendar"></div>
-<div id="detail">
-  <h3 id="selDate" style="margin:0 0 8px; color:var(--primary);"></h3>
-  <div class="grid-3">
-    <div class="box box-m"><h4> Set Trade (Morning)</h4><div id="mNums" class="nums">-</div></div>
-    <div class="box box-i"><h4> Internet (Evening)</h4><div id="iNums" class="nums">-</div></div>
-    <div class="box box-s"><h4>🔢 Modern (Special)</h4><div id="sNums" class="nums">-</div></div>
+<div class="container">
+  <div class="header"><h2>📅 2D Special Calendar</h2></div>
+  <div class="selectors">
+    <select id="yearSel"></select>
+    <select id="monthSel"></select>
   </div>
+  <div id="calendar"></div>
+  <div class="tabs">
+    <button class="tab-btn active" onclick="switchTab('all', this)">🔄 နေ့/ည</button>
+    <button class="tab-btn" onclick="switchTab('morning', this)">☀️ နေ့</button>
+    <button class="tab-btn" onclick="switchTab('evening', this)">🌙 ညနေ</button>
+  </div>
+  <div id="res-all" class="result-box active"></div>
+  <div id="res-morning" class="result-box"></div>
+  <div id="res-evening" class="result-box"></div>
 </div>
-
-<div id="loadMsg" class="load">ဒေတာများ ဆွဲယူနေပါသည်...</div>
-
 <script>
-  // ⚠️ YOUR_USERNAME နေရာမှာ မင်း GitHub username ကို အစားထိုးပါ
   const JSON_URL = "https://raw.githubusercontent.com/2dmyanmarteam-droid/myanmar-2d-live/main/data/calendar-data.json";
-  
   let DATA = {};
   const ySel = document.getElementById('yearSel');
   const mSel = document.getElementById('monthSel');
   const calDiv = document.getElementById('calendar');
-  const detDiv = document.getElementById('detail');
-  const loadMsg = document.getElementById('loadMsg');
-
-  // လ/နှစ် ရွေးချယ်စရာ ဖြည့်ပါ
   for(let y=2023; y<=2026; y++) ySel.innerHTML += `<option value="${y}" ${y==2026?'selected':''}>${y}</option>`;
-  const months = ["ဇန်နဝါရီ","ဖေဖော်ဝါရီ","မတ်","ဧပြီ","မေ","ွန်","ဇူလိုင်","သြဂုတ်","စက်တင်ဘာ","အောက်တိုဘာ","နိုဝင်ဘာ","ဒီဇင်ဘာ"];
+  const months = ["ဇန်","ဖေ","မတ်","ပြီ","မေ","ဇွန်","ဇူ","သြ","စက်","အောက်","နို","ဒီ"];
   months.forEach((m,i) => mSel.innerHTML += `<option value="${i}" ${i==5?'selected':''}>${m}</option>`);
-
-  // JSON ဆွဲယူခြင်း
-  fetch(JSON_URL)
-    .then(res => res.json())
-    .then(json => {
-      DATA = json;
-      loadMsg.style.display = 'none';
-      buildCalendar();
-    })
-    .catch(err => {
-      loadMsg.textContent = "❌ ဒေတာမရရှိပါ။ URL သို့မဟုတ် ဖိုင်နာမည် မှန်ကန်မှုကို စစ်ဆေးပါ။";
-      console.error(err);
-    });
-
+  fetch(JSON_URL).then(res => res.json()).then(json => { DATA = json; buildCalendar(); }).catch(err => console.error("Error", err));
   function buildCalendar() {
     const year = +ySel.value, month = +mSel.value;
     calDiv.innerHTML = '';
-    detDiv.style.display = 'none';
-    
     const days = ['နွေ','လာ','ဂါ','ဗုဒ္','ကြာ','စနေ','တနင်'];
-    days.forEach(d => {
-      const h = document.createElement('div');
-      h.className = 'day-head'; h.textContent = d; calDiv.appendChild(h);
-    });
-
+    days.forEach(d => { const h = document.createElement('div'); h.className = 'day-head'; h.textContent = d; calDiv.appendChild(h); });
     const firstDay = new Date(year, month, 1).getDay();
     const daysInMonth = new Date(year, month+1, 0).getDate();
-
     for(let i=0; i<firstDay; i++) calDiv.appendChild(document.createElement('div'));
-
     for(let d=1; d<=daysInMonth; d++) {
       const dateKey = `${year}-${String(month+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
       const cell = document.createElement('div');
       cell.className = 'day-cell';
-      cell.innerHTML = `<span>${d}</span>`;
-      
+      cell.textContent = d;
       if(DATA[dateKey]) {
         if(DATA[dateKey].set_numbers?.length) cell.innerHTML += `<span class="dot dot-m"></span>`;
-        if(DATA[dateKey].internet_numbers?.length) cell.innerHTML += `<span class="dot dot-i"></span>`;
-        if(DATA[dateKey].modern_numbers?.length) cell.innerHTML += `<span class="dot dot-s"></span>`;
+        if(DATA[dateKey].internet_numbers?.length) cell.innerHTML += `<span class="dot dot-e"></span>`;
         cell.onclick = () => showDetail(dateKey, cell);
       }
       calDiv.appendChild(cell);
     }
   }
-
+  function switchTab(type, btn) {
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    document.querySelectorAll('.result-box').forEach(box => box.classList.remove('active'));
+    document.getElementById(`res-${type}`).classList.add('active');
+  }
   function showDetail(key, el) {
     document.querySelectorAll('.day-cell').forEach(c => c.classList.remove('active'));
     el.classList.add('active');
-    detDiv.style.display = 'block';
-    document.getElementById('selDate').textContent = `📅 ${key}`;
-    
     const d = DATA[key] || {};
-    document.getElementById('mNums').textContent = d.set_numbers?.join(' | ') || '-';
-    document.getElementById('iNums').textContent = d.internet_numbers?.join(' | ') || '-';
-    document.getElementById('sNums').textContent = d.modern_numbers?.join(' | ') || '-';
+    const createGrid = (nums) => nums ? nums.map(n => `<div class="num-item">${n}</div>`).join('') : '<div class="num-item">--</div>';
+    document.getElementById('res-all').innerHTML = `<div class="group-title" style="color:#e74c3c">☀️ Set Trade (နေ့လည်)</div><div class="num-grid morning">${createGrid(d.set_numbers)}</div><br><div class="group-title" style="color:#2ecc71">🌙 Internet (ညနေ)</div><div class="num-grid evening">${createGrid(d.internet_numbers)}</div><br><div class="group-title" style="color:#f39c12">🔢 Modern (Special)</div><div class="num-grid">${createGrid(d.modern_numbers)}</div>`;
+    document.getElementById('res-morning').innerHTML = `<div class="group-title">☀️ Set Trade (နေ့လည်)</div><div class="num-grid morning">${createGrid(d.set_numbers)}</div>`;
+    document.getElementById('res-evening').innerHTML = `<div class="group-title">🌙 Internet (ညနေ)</div><div class="num-grid evening">${createGrid(d.internet_numbers)}</div><br><div class="group-title" style="color:#f39c12">🔢 Modern (Special)</div><div class="num-grid">${createGrid(d.modern_numbers)}</div>`;
   }
 </script>
 </body>
