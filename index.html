@@ -75,49 +75,70 @@
   fetch(JSON_URL).then(res => res.json()).then(json => { DATA = json; buildList(); }).catch(err => console.error(err));
 
   function buildList() {
-  const year = +ySel.value, month = +mSel.value;
-  listDiv.innerHTML = '';
-  const daysInMonth = new Date(year, month+1, 0).getDate();
-  
-  // ✅ အတိအကျ - 1=Mon, 2=Tue, 3=Wed, 4=Thu, 5=Fri
-  const dayNames = {
-    1: 'တနင်္လာ',
-    2: 'အင်္ဂါ',
-    3: 'ဗုဒ္ဓဟူး',
-    4: 'ကြာသပတေး',
-    5: 'သောကြာ'
-  };
-  
-  for(let d=1; d<=daysInMonth; d++) {
-    const dateObj = new Date(year, month, d);
-    let dayIndex = dateObj.getDay(); // 0=Sun, 1=Mon, ..., 6=Sat
+    const year = +ySel.value, month = +mSel.value;
+    listDiv.innerHTML = '';
+    const daysInMonth = new Date(year, month+1, 0).getDate();
     
-    // ✅ Sunday(0) ကို 7 လို့ ပြောင်းမယ်, Saturday(6) ကို 6
-    // ပြီးရင် 1-5 (Mon-Fri) ပဲ ယူမယ်
-    if (dayIndex === 0) dayIndex = 7; // Sunday = 7
+    const dayNames = ['တနင်္လာ', 'အင်္ဂါ', 'ဗုဒ္ဓဟူး', 'ကြာသပတေး', 'သောကြာ'];
     
-    // ✅ 1-5 (Monday-Friday) ပဲ ယူမယ်, 6(Sat), 7(Sun) ဖြုတ်မယ်
-    if (dayIndex < 1 || dayIndex > 5) continue;
-    
-    const dateKey = `${year}-${String(month+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
-    const data = DATA[dateKey];
+    for(let d=1; d<=daysInMonth; d++) {
+      const dateObj = new Date(year, month, d);
+      const dayOfWeek = dateObj.getDay(); // 0=Sun, 1=Mon, 2=Tue, 3=Wed, 4=Thu, 5=Fri, 6=Sat
+      
+      // ✅ စနေ (6) နှင့် တနင်္ဂနွေ (0) ကို လုံးဝဖြုတ်မယ်
+      if (dayOfWeek === 0 || dayOfWeek === 6) {
+        continue;
+      }
+      
+      // ✅ 1-5 (Mon-Fri) ပဲ ယူမယ်
+      const dayIndex = dayOfWeek - 1; // 1→0, 2→1, 3→2, 4→3, 5→4
+      
+      const dateKey = `${year}-${String(month+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+      const data = DATA[dateKey];
 
-    const row = document.createElement('div');
-    row.className = 'day-row';
-    row.innerHTML = `
-      <div class="day-info">
-        <span class="day-name">${dayNames[dayIndex]}</span>
-        <span class="day-num">${d}</span>
-      </div>
-      <div class="dots">
-        ${data?.set_numbers?.length ? '<span class="dot dot-m"></span>' : ''}
-        ${data?.internet_numbers?.length ? '<span class="dot dot-e"></span>' : ''}
-      </div>
-    `;
-    if(data) row.onclick = () => showDetail(dateKey, row);
-    listDiv.appendChild(row);
+      const row = document.createElement('div');
+      row.className = 'day-row';
+      row.innerHTML = `
+        <div class="day-info">
+          <span class="day-name">${dayNames[dayIndex]}</span>
+          <span class="day-num">${d}</span>
+        </div>
+        <div class="dots">
+          ${data?.set_numbers?.length ? '<span class="dot dot-m"></span>' : ''}
+          ${data?.internet_numbers?.length ? '<span class="dot dot-e"></span>' : ''}
+        </div>
+      `;
+      if(data) row.onclick = () => showDetail(dateKey, row);
+      listDiv.appendChild(row);
+    }
+    document.querySelectorAll('.result-box').forEach(b => b.innerHTML = '<div class="empty-msg">📅 ရက်စွဲတစ်ခုကို နှိပ်ပါ</div>');
   }
-}
+
+  function switchTab(type, btn) {
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    document.querySelectorAll('.result-box').forEach(box => box.classList.remove('active'));
+    document.getElementById(`res-${type}`).classList.add('active');
+  }
+
+  function showDetail(key, el) {
+    document.querySelectorAll('.day-row').forEach(c => c.classList.remove('active'));
+    el.classList.add('active');
+    const d = DATA[key] || {};
+    const createGrid = (nums) => nums?.length ? nums.map(n => `<div class="num-item">${n}</div>`).join('') : '<div class="num-item">--</div>';
+    
+    const allHtml = `
+      <div class="group-title" style="color:#e74c3c">☀️ Set Trade (နေ့လည်)</div>
+      <div class="num-grid morning">${createGrid(d.set_numbers)}</div>
+      <div class="group-title" style="color:#2ecc71; margin-top:8px">🌙 Internet (ညနေ)</div>
+      <div class="num-grid evening">${createGrid(d.internet_numbers)}</div>
+      <div class="group-title" style="color:#f39c12; margin-top:8px">🔢 Modern (Special)</div>
+      <div class="num-grid">${createGrid(d.modern_numbers)}</div>
+    `;
+    document.getElementById('res-all').innerHTML = allHtml;
+    document.getElementById('res-morning').innerHTML = `<div class="group-title">☀️ Set Trade (နေ့လည်)</div><div class="num-grid morning">${createGrid(d.set_numbers)}</div>`;
+    document.getElementById('res-evening').innerHTML = `<div class="group-title">🌙 Internet (ညနေ)</div><div class="num-grid evening">${createGrid(d.internet_numbers)}</div><div class="group-title" style="color:#f39c12; margin-top:8px">🔢 Modern</div><div class="num-grid">${createGrid(d.modern_numbers)}</div>`;
+  }
 
   ySel.onchange = buildList;
   mSel.onchange = buildList;
