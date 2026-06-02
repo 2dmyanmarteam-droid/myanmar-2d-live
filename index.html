@@ -85,7 +85,7 @@
       color: #fff;
       font-weight: bold;
       z-index: 3;
-      min-width: 70px;
+      min-width: 80px;
       text-align: center !important;
       border-right: 2px solid #002244;
     }
@@ -124,11 +124,11 @@
       <tbody id="tableBody"></tbody>
     </table>
   </div>
-  <div class="mobile-hint">📱 ဇယားကျယ်သဖြင့် ညာဘက်သို့ လက်နဲ့ဆွဲကြည့်ပါ</div>
+  <div class="mobile-hint">📱 ယားကျယ်သဖြင့် ညာဘက်သို့ လက်နဲ့ဆွဲကြည့်ပါ</div>
 </div>
 
 <script>
-  // ပုံထဲက ဂဏန်းတွေ (နံနက်ပိုင်း) - မျက်စိနဲ့ ဖတ်ထားတာ၊ မှားနိုင်ခြေ ရှိပါတယ်
+  // ပုံထဲက ဂဏန်းတွေ (နံနက်ပိုင်း) - Row 1-20
   const morningData = [
     [87,01,32,38,44,15,33,57,70,94,12,22,52,78,71,42,46,65,73,19,48,44,19,49,21,61,15,68,42,53,65,63,15,65,66,53,63,35,46,58,16,40,12,19,55,63,73,22,59,72,47,40,54,56,52,56,12,58],
     [05,27,94,73,92,22,20,47,72,07,57,03,21,63,85,04,10,82,60,70,98,61,23,47,34,93,36,94,72,17,73,55,13,09,73,56,36,88,75,54,29,03,25,16,05,29,09,01,54,33,97,97,33,16,09,29,09,01],
@@ -152,9 +152,27 @@
     [78,64,74,72,13,16,64,94,01,47,82,92,92,98,11,69,39,03,76,27,77,38,35,62,32,52,00,98,40,51,66,71,98,69,49,65,17,05,26,55,22,93,96,43,50,10,39,08,98,40,51,66,71,98,69,49,65,17]
   ];
 
-  const dayNames = ['MON','TUE','WED','THU','FRI'];
+  // ဇွန်လ ၂၀၂၆ ရက်စွဲများ (Mon-Fri only)
+  const year = 2026;
+  const month = 5; // June (0-indexed)
+  const daysInMonth = new Date(year, month + 1, 0).getDate();
+  
+  const dayNames = ['','','တနင်္လာ','အင်္ဂါ','ဗုဒ္ဓဟူး','ကြာသပတေး','သောကြာ'];
+  let workingDays = [];
+  
+  // အလုပ်လုပ်ရက်များ စုဆောင်းခြင်း
+  for(let d=1; d<=daysInMonth; d++) {
+    const dateObj = new Date(year, month, d);
+    const dow = dateObj.getDay();
+    
+    if(dow >= 1 && dow <= 5) {
+      workingDays.push({ date: d, dayName: dayNames[dow] });
+    }
+  }
+
   const MAX_COLS = 58;
 
+  // ကော်လံ ေါင်းစဉ် ၁-၅၈
   const headerRow = document.getElementById('headerRow');
   for(let i=1; i<=MAX_COLS; i++) {
     headerRow.innerHTML += `<th>${i}</th>`;
@@ -162,14 +180,18 @@
 
   const tbody = document.getElementById('tableBody');
   
+  // Row 20 အထိ ဖြည့်ခြင်း (ရက်စွဲနဲ့ ကိုက်ညီအောင်)
   for(let row=0; row<20; row++) {
     const tr = document.createElement('tr');
+    
+    // ပထမကော်လံ (ရက်စွဲ + နေ့)
     const dayTd = document.createElement('td');
     dayTd.className = 'day-col';
-    const dayName = dayNames[row % 5];
-    dayTd.innerHTML = `${row+1}<br><small style="font-size:9px">${dayName}</small>`;
+    const dayInfo = workingDays[row] || { date: '-', dayName: '' };
+    dayTd.innerHTML = `${row+1}<br><small style="font-size:9px">${dayInfo.date} ${dayInfo.dayName}</small>`;
     tr.appendChild(dayTd);
     
+    // ဂဏန်းများ (ပုံထဲက data)
     for(let col=0; col<MAX_COLS; col++) {
       const td = document.createElement('td');
       td.className = 'num-cell';
