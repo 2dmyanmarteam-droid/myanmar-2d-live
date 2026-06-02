@@ -26,7 +26,6 @@
       padding: 12px;
       font-weight: bold;
       font-size: 15px;
-      letter-spacing: 1px;
     }
     .toggle-buttons {
       display: flex;
@@ -108,6 +107,9 @@
     .num-cell.evening {
       color: #188038;
     }
+    .empty-cell {
+      background: #fff;
+    }
     .mobile-hint {
       text-align: center;
       font-size: 11px;
@@ -122,8 +124,8 @@
 <div class="container">
   <div class="header">SPECIAL THAI TWO DIGIT NUMBERS CALENDAR</div>
   <div class="toggle-buttons">
-    <button class="toggle-btn active" onclick="switchView('morning', this)">☀️ ံနက် (9:30 AM)</button>
-    <button class="toggle-btn" onclick="switchView('evening', this)">🌙 နေ (4:30 PM)</button>
+    <button class="toggle-btn active" onclick="switchView('morning', this)">☀️ နံနက် (9:30 AM)</button>
+    <button class="toggle-btn" onclick="switchView('evening', this)">🌙 ညနေ (4:30 PM)</button>
   </div>
   <div class="table-wrapper">
     <table class="trade-table" id="calendarTable">
@@ -135,11 +137,11 @@
       <tbody id="tableBody"></tbody>
     </table>
   </div>
-  <div class="mobile-hint"> ဇယားကျယ်သဖြင့် ာဘက်သို့ လက်နဲ့ဆွဲကြည့်ပါ</div>
+  <div class="mobile-hint"> ဇယားကျယ်သဖြင့် ညာဘက်သို့ လက်နဲ့ဆွဲကြည့်ပါ</div>
 </div>
 
 <script>
-  const dayNames = ['တနင်္လာ', 'အင်္ဂါ', 'ဗုဒ္ဓဟူး', 'ကြာသပတေး', 'သောကြာ'];
+  const dayNames = ['တနင်္လာ', 'အင်္ဂါ', 'ုဒ္ဓဟူး', 'ကြာသပတေး', 'သောကြာ'];
   const MAX_ROWS = 20;
   const MAX_COLS = 30;
   let currentView = 'morning';
@@ -169,8 +171,6 @@
       dayTd.className = 'day-col';
       if(row % 2 === 0) dayTd.classList.add('odd-row');
 
-      // Row 1 = "1" (နေ့အမည်မပါ)
-      // Row 2-20 = နံပါတ် + ေ့အမည် (Mon-Fri လှည့်)
       if(row === 1) {
         dayTd.innerHTML = `${row}`;
       } else {
@@ -179,12 +179,20 @@
       }
       tr.appendChild(dayTd);
 
-      // ဏန်းများ: formula = 20 × (col-1) + row
+      // ကော်လံ 1-30
       for(let col = 1; col <= MAX_COLS; col++) {
         const td = document.createElement('td');
-        const value = 20 * (col - 1) + row;
         td.className = 'num-cell' + (currentView === 'evening' ? ' evening' : '');
-        td.textContent = String(value).padStart(2, '0');
+        
+        if(col === 1) {
+          // ✅ Column 1 မှာ row နံပါတ် ပဲ ထည့်မယ် (01-20)
+          td.textContent = String(row).padStart(2, '0');
+        } else {
+          // ✅ ကျန် column တွေ အလွတ်ထားမယ်
+          td.className = 'empty-cell';
+          td.textContent = '';
+        }
+        
         tr.appendChild(td);
       }
 
@@ -192,7 +200,6 @@
     }
   }
 
-  // Page load ဖြစ်တာနဲ့ Table ကို ဆောက်မယ်
   buildTable();
 </script>
 
