@@ -46,6 +46,7 @@
       font-weight: bold;
       cursor: pointer;
       border-radius: 6px;
+      transition: all 0.2s;
     }
     .toggle-btn.active {
       background: #003366;
@@ -59,11 +60,11 @@
       border-collapse: collapse;
       width: 100%;
       min-width: 1800px;
-      font-size: 10px;
+      font-size: 11px;
     }
     .trade-table th, .trade-table td {
       border: 1px solid #c0d0e0;
-      padding: 3px 2px;
+      padding: 4px 3px;
       text-align: center;
       white-space: nowrap;
       min-width: 28px;
@@ -73,7 +74,7 @@
       color: #fff;
       font-weight: bold;
       height: 28px;
-      font-size: 10px;
+      font-size: 11px;
       position: sticky;
       top: 0;
       z-index: 2;
@@ -93,9 +94,16 @@
     .num-cell {
       font-family: monospace;
       font-weight: bold;
-      font-size: 10px;
+      font-size: 11px;
       color: #d93025;
       background: #fff;
+    }
+    .num-cell.evening {
+      color: #188038;
+    }
+    .empty-cell {
+      background: #f5f5f5;
+      color: #ccc;
     }
     .mobile-hint {
       text-align: center;
@@ -109,10 +117,10 @@
 <body>
 
 <div class="container">
-  <div class="header">SPECIAL THAI TWO DIGIT NUMBERS CALENDAR (နံနက် 9:30 AM)</div>
+  <div class="header">SPECIAL THAI TWO DIGIT NUMBERS CALENDAR</div>
   <div class="toggle-buttons">
-    <button class="toggle-btn active">☀️ နံနက် (9:30 AM)</button>
-    <button class="toggle-btn">🌙 ညနေ (4:30 PM)</button>
+    <button class="toggle-btn active" onclick="switchView('morning', this)">☀️ နံနက် (9:30 AM)</button>
+    <button class="toggle-btn" onclick="switchView('evening', this)">🌙 ညနေ (4:30 PM)</button>
   </div>
   <div class="table-wrapper">
     <table class="trade-table" id="calendarTable">
@@ -124,82 +132,75 @@
       <tbody id="tableBody"></tbody>
     </table>
   </div>
-  <div class="mobile-hint">📱 ယားကျယ်သဖြင့် ညာဘက်သို့ လက်နဲ့ဆွဲကြည့်ပါ</div>
+  <div class="mobile-hint">📱 ဇယားကျယ်သဖြင့် ညာဘက်သို့ လက်နဲ့ဆွဲကြည့်ပါ</div>
 </div>
 
 <script>
-  // ပုံထဲက ဂဏန်းတွေ (နံနက်ပိုင်း) - Row 1-20
-  const morningData = [
-    [87,01,32,38,44,15,33,57,70,94,12,22,52,78,71,42,46,65,73,19,48,44,19,49,21,61,15,68,42,53,65,63,15,65,66,53,63,35,46,58,16,40,12,19,55,63,73,22,59,72,47,40,54,56,52,56,12,58],
-    [05,27,94,73,92,22,20,47,72,07,57,03,21,63,85,04,10,82,60,70,98,61,23,47,34,93,36,94,72,17,73,55,13,09,73,56,36,88,75,54,29,03,25,16,05,29,09,01,54,33,97,97,33,16,09,29,09,01],
-    [85,29,71,13,45,46,17,53,07,63,45,76,35,22,15,15,69,86,87,13,55,29,18,61,34,12,80,90,02,27,24,94,51,68,57,52,62,62,07,17,18,37,50,11,87,58,38,42,60,38,52,51,43,11,07,58,38,42],
-    [65,63,02,71,75,12,08,33,59,85,45,52,79,96,38,22,40,61,97,14,73,60,60,86,25,48,08,22,74,97,44,56,76,11,57,57,99,78,74,08,49,08,17,84,15,45,71,06,87,14,13,17,67,24,70,47,08,17],
-    [41,85,72,23,05,80,72,57,79,07,52,25,18,43,24,58,71,00,90,01,68,17,40,28,58,50,22,98,98,03,90,31,00,03,02,25,34,65,30,44,08,21,71,25,39,35,54,50,41,55,88,20,10,41,55,88,20],
-    [37,92,07,96,42,25,73,52,01,22,70,60,41,19,11,22,81,20,99,41,62,61,47,47,70,86,49,09,98,91,79,45,33,40,05,11,98,79,05,02,37,81,38,59,79,20,13,53,49,39,58,96,05,74,02,65,65,79],
-    [20,68,63,71,49,39,58,96,05,74,02,65,65,79,84,61,61,10,08,51,55,79,47,90,97,67,99,69,50,10,46,68,73,29,81,65,59,53,18,30,08,19,24,78,57,85,23,85,25,15,99,68,13,61,61,10,08,51],
-    [28,12,01,41,63,19,74,64,80,05,90,16,36,32,54,57,97,76,15,41,60,87,30,84,66,54,25,20,20,63,57,18,88,76,15,35,02,43,29,74,50,04,65,75,51,30,70,15,46,38,54,83,52,04,67,27,19,25],
-    [15,08,82,15,29,21,88,26,65,27,36,02,50,74,88,10,72,31,45,49,83,15,83,52,04,67,27,19,25,56,10,11,94,71,68,98,87,56,92,82,82,12,47,34,84,53,85,83,85,15,29,21,88,26,65,27,36,02],
-    [30,58,16,45,15,83,53,04,67,27,19,25,85,10,10,14,94,71,68,88,87,88,92,82,82,12,47,24,84,83,85,83,15,29,21,88,26,65,27,38,02,80,74,88,10,72,31,45,49,83,15,12,12,16,77,08,53,23],
-    [08,04,15,69,45,15,99,40,31,21,24,82,24,31,18,52,55,42,06,79,48,44,47,97,48,44,47,97,48,44,47,16,67,76,78,44,96,48,36,45,17,61,56,16,67,76,78,44,96,48,36,45,17,61,56,16,67],
-    [26,18,40,26,29,31,30,35,25,89,57,02,71,00,65,10,09,60,38,20,35,98,61,60,78,15,60,51,37,44,17,43,21,03,53,42,24,55,95,81,99,37,64,04,43,99,36,37,73,50,79,65,98,21,03,53,42,24],
-    [44,09,64,33,58,99,25,22,81,51,07,96,71,77,12,77,68,44,15,57,89,69,18,61,65,99,16,71,23,03,04,67,61,87,05,31,03,18,95,06,25,95,81,25,74,45,45,28,42,86,96,54,61,87,05,31,03,18],
-    [03,00,87,75,37,97,85,08,39,99,94,84,67,64,75,59,40,05,04,71,59,57,54,56,62,86,32,46,42,78,80,11,91,02,59,53,78,85,40,85,62,92,71,31,25,75,04,88,55,12,21,80,11,91,02,59,53,78],
-    [05,32,91,58,17,08,30,66,74,75,39,97,58,08,27,66,85,44,39,81,79,30,64,75,39,91,72,89,62,66,03,13,41,86,59,42,88,21,40,82,52,77,60,71,61,50,72,05,66,53,26,03,13,41,86,59,42,88],
-    [74,10,54,48,23,78,55,34,85,65,10,30,56,56,66,12,82,32,95,53,89,19,98,00,78,89,61,51,55,77,56,13,91,46,54,96,26,67,67,76,78,44,96,48,36,45,17,61,56,56,13,91,46,54,96,26,67,67],
-    [24,05,55,20,01,67,72,15,05,18,90,11,74,87,30,76,22,23,67,14,64,79,68,73,76,22,20,11,69,39,21,36,66,21,59,40,02,56,20,63,55,71,91,47,86,22,25,41,31,28,21,70,66,21,59,40,02,56],
-    [91,51,69,80,16,96,59,84,69,04,06,77,21,79,95,33,04,01,30,33,66,70,56,33,89,86,44,52,33,94,79,63,89,74,83,26,82,14,61,40,18,83,02,86,07,04,11,29,42,71,26,17,55,89,74,83,26,82],
-    [67,19,15,19,41,29,14,17,36,64,94,61,26,46,13,05,30,06,14,80,32,06,55,53,75,35,52,45,51,00,36,99,76,39,78,28,92,15,94,30,63,22,62,76,32,95,42,60,44,07,14,36,99,76,39,78,28,92],
-    [78,64,74,72,13,16,64,94,01,47,82,92,92,98,11,69,39,03,76,27,77,38,35,62,32,52,00,98,40,51,66,71,98,69,49,65,17,05,26,55,22,93,96,43,50,10,39,08,98,40,51,66,71,98,69,49,65,17]
-  ];
+  const dayNames = ['တနင်္လာ', 'အင်္ဂါ', 'ဗုဒ္ဓဟူး', 'ကြာသပတေး', 'သောကြာ'];
+  const TOTAL_ROWS = 20;
+  const MAX_COLS = 60;
+  let currentView = 'morning';
 
-  // ဇွန်လ ၂၀၂၆ ရက်စွဲများ (Mon-Fri only)
-  const year = 2026;
-  const month = 5; // June (0-indexed)
-  const daysInMonth = new Date(year, month + 1, 0).getDate();
-  
-  const dayNames = ['','','တနင်္လာ','အင်္ဂါ','ဗုဒ္ဓဟူး','ကြာသပတေး','သောကြာ'];
-  let workingDays = [];
-  
-  // အလုပ်လုပ်ရက်များ စုဆောင်းခြင်း
-  for(let d=1; d<=daysInMonth; d++) {
-    const dateObj = new Date(year, month, d);
-    const dow = dateObj.getDay();
-    
-    if(dow >= 1 && dow <= 5) {
-      workingDays.push({ date: d, dayName: dayNames[dow] });
-    }
-  }
-
-  const MAX_COLS = 58;
-
-  // ကော်လံ ေါင်းစဉ် ၁-၅၈
+  // ကော်လံ ခေါင်းစဉ် ၁-၆၀
   const headerRow = document.getElementById('headerRow');
   for(let i=1; i<=MAX_COLS; i++) {
     headerRow.innerHTML += `<th>${i}</th>`;
   }
 
-  const tbody = document.getElementById('tableBody');
-  
-  // Row 20 အထိ ဖြည့်ခြင်း (ရက်စွဲနဲ့ ကိုက်ညီအောင်)
-  for(let row=0; row<20; row++) {
-    const tr = document.createElement('tr');
-    
-    // ပထမကော်လံ (ရက်စွဲ + နေ့)
-    const dayTd = document.createElement('td');
-    dayTd.className = 'day-col';
-    const dayInfo = workingDays[row] || { date: '-', dayName: '' };
-    dayTd.innerHTML = `${row+1}<br><small style="font-size:9px">${dayInfo.date} ${dayInfo.dayName}</small>`;
-    tr.appendChild(dayTd);
-    
-    // ဂဏန်းများ (ပုံထဲက data)
-    for(let col=0; col<MAX_COLS; col++) {
-      const td = document.createElement('td');
-      td.className = 'num-cell';
-      td.textContent = morningData[row][col] !== undefined ? String(morningData[row][col]).padStart(2,'0') : '';
-      tr.appendChild(td);
-    }
-    tbody.appendChild(tr);
+  // နံနက်/ညနေ ပြောင်းလဲခြင်း
+  function switchView(view, btn) {
+    currentView = view;
+    document.querySelectorAll('.toggle-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    buildTable();
   }
+
+  // Table ဆောက်ခြင်း
+  function buildTable() {
+    const tbody = document.getElementById('tableBody');
+    tbody.innerHTML = '';
+    
+    for(let row=1; row<=TOTAL_ROWS; row++) {
+      const tr = document.createElement('tr');
+      
+      // ပထမကော်လံ (DAY Label)
+      const dayTd = document.createElement('td');
+      dayTd.className = 'day-col';
+      
+      // ✅ Row 1 = နေ့အမည်မပါ
+      // ✅ Row 2-20 = အစဉ်လိုက် Mon-Fri
+      if(row === 1) {
+        dayTd.innerHTML = `${row}`;
+      } else {
+        const dayIndex = (row - 2) % 5; // 0-4
+        dayTd.innerHTML = `${row}<br><small style="font-size:9px">${dayNames[dayIndex]}</small>`;
+      }
+      tr.appendChild(dayTd);
+      
+      // ဂန်းများ (Column 1-60)
+      for(let col=1; col<=MAX_COLS; col++) {
+        const td = document.createElement('td');
+        
+        if(col === 1) {
+          // Column 1 မှာ row နံပါတ်
+          td.className = 'num-cell' + (currentView === 'evening' ? ' evening' : '');
+          td.textContent = String(row).padStart(2, '0');
+        } else {
+          // ✅ Column 2-60: Formula = (col-1) × 20 + row
+          const value = (col - 1) * 20 + row;
+          td.className = 'num-cell' + (currentView === 'evening' ? ' evening' : '');
+          td.textContent = String(value).padStart(2, '0');
+        }
+        
+        tr.appendChild(td);
+      }
+      
+      tbody.appendChild(tr);
+    }
+  }
+
+  // Page load ဖြစ်တာနဲ့ Table ကို ဆောက်မယ်
+  buildTable();
 </script>
 
 </body>
