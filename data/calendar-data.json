@@ -124,8 +124,8 @@
 <div class="container">
   <div class="header">SPECIAL THAI TWO DIGIT NUMBERS CALENDAR</div>
   <div class="toggle-buttons">
-    <button class="toggle-btn active" onclick="switchView('morning', this)">☀️ နံနက် (9:30 AM)</button>
-    <button class="toggle-btn" onclick="switchView('evening', this)">🌙 ညနေ (4:30 PM)</button>
+    <button class="toggle-btn active" onclick="switchView('morning', this)">️ နံနက် (9:30 AM)</button>
+    <button class="toggle-btn" onclick="switchView('evening', this)"> ညနေ (4:30 PM)</button>
   </div>
   <div class="table-wrapper">
     <table class="trade-table" id="calendarTable">
@@ -141,12 +141,11 @@
 </div>
 
 <script>
-  const dayNames = ['တနင်္လာ', 'အင်္ဂါ', 'ုဒ္ဓဟူး', 'ကြာသပတေး', 'သောကြာ'];
+  const dayNames = ['တနင်္လာ', 'အင်္ဂါ', 'ဗုဒ္ဓဟူး', 'ကြာသပတေး', 'သောကြာ'];
   const MAX_ROWS = 20;
   const MAX_COLS = 30;
   let currentView = 'morning';
 
-  // ကော်လံ ခေါင်းစဉ် 1-30
   const headerRow = document.getElementById('headerRow');
   for(let i = 1; i <= MAX_COLS; i++) {
     headerRow.innerHTML += `<th>${i}</th>`;
@@ -166,29 +165,46 @@
     for(let row = 1; row <= MAX_ROWS; row++) {
       const tr = document.createElement('tr');
 
-      // ပထမကော်လံ (DAY)
       const dayTd = document.createElement('td');
       dayTd.className = 'day-col';
       if(row % 2 === 0) dayTd.classList.add('odd-row');
 
+      // ✅ Row 1 = "1" (နေ့အမည်မပါ)
+      // ✅ Row 2-5 = တနင်္လာ-ကြာသပတေး (နေ့အမည်ပါ)
+      // ✅ Row 6-7 = ပိတ်ရက် (နေ့အမည်မပါ)
+      // ✅ Row 8-12 = တနင်္လာ-သောကြာ (နေ့အမည်ပါ)
+      // ✅ Row 13-14 = ပိတ်ရက် (နေ့အမည်မပါ)
+      // ✅ Row 15-19 = တနင်္လာ-သောကြာ (နေ့အမည်ပါ)
+      // ✅ Row 20 = ပိတ်ရက် (နေ့အမည်မပါ)
+      
+      let dayLabel = `${row}`;
+      
       if(row === 1) {
-        dayTd.innerHTML = `${row}`;
+        // Row 1: နေ့အမည်မပါ
+        dayLabel = '1';
       } else {
-        const dayIndex = (row - 2) % 5;
-        dayTd.innerHTML = `${row}<br><small style="font-size:9px">${dayNames[dayIndex]}</small>`;
+        // Row 2-20: ပိတ်ရက်/အလုပ်လုပ်ရက် စစ်ဆေးမယ်
+        const weekDay = (row - 2) % 7; // 0-6
+        
+        if(weekDay < 5) {
+          // ✅ အလုပ်လုပ်ရက် (တနင်္လာ-သောကြာ)
+          dayLabel = `${row}<br><small style="font-size:9px">${dayNames[weekDay]}</small>`;
+        } else {
+          // ✅ ပိတ်ရက် (စနေ/တနင်္ဂနွေ) - နေ့အမည်မပါ
+          dayLabel = `${row}`;
+        }
       }
+      
+      dayTd.innerHTML = dayLabel;
       tr.appendChild(dayTd);
 
-      // ကော်လံ 1-30
       for(let col = 1; col <= MAX_COLS; col++) {
         const td = document.createElement('td');
         td.className = 'num-cell' + (currentView === 'evening' ? ' evening' : '');
         
         if(col === 1) {
-          // ✅ Column 1 မှာ row နံပါတ် ပဲ ထည့်မယ် (01-20)
           td.textContent = String(row).padStart(2, '0');
         } else {
-          // ✅ ကျန် column တွေ အလွတ်ထားမယ်
           td.className = 'empty-cell';
           td.textContent = '';
         }
