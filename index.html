@@ -11,7 +11,6 @@
       background: #e8ecef; 
       padding: 10px; 
     }
-    
     .container {
       max-width: 100%;
       background: #fff;
@@ -20,7 +19,6 @@
       overflow: hidden;
       border-radius: 8px;
     }
-
     .header {
       background: linear-gradient(135deg, #003366 0%, #0055aa 100%);
       color: #fff;
@@ -30,7 +28,6 @@
       font-size: 15px;
       letter-spacing: 1px;
     }
-
     .toggle-buttons {
       display: flex;
       background: #f0f0f0;
@@ -39,7 +36,6 @@
       justify-content: center;
       border-bottom: 1px solid #ddd;
     }
-
     .toggle-btn {
       flex: 1;
       max-width: 220px;
@@ -51,24 +47,20 @@
       cursor: pointer;
       border-radius: 6px;
     }
-
     .toggle-btn.active {
       background: #003366;
       color: #fff;
     }
-
     .table-wrapper {
       overflow-x: auto;
       -webkit-overflow-scrolling: touch;
     }
-
     .trade-table {
       border-collapse: collapse;
       width: 100%;
       min-width: 1400px;
       font-size: 11px;
     }
-
     .trade-table th, .trade-table td {
       border: 1px solid #c0d0e0;
       padding: 4px 3px;
@@ -76,7 +68,6 @@
       white-space: nowrap;
       min-width: 32px;
     }
-
     .trade-table th {
       background: #003366;
       color: #fff;
@@ -87,7 +78,6 @@
       top: 0;
       z-index: 2;
     }
-
     .day-col {
       position: sticky;
       left: 0;
@@ -99,11 +89,7 @@
       text-align: center !important;
       border-right: 2px solid #002244;
     }
-
-    .trade-table thead .day-col {
-      z-index: 4;
-    }
-
+    .trade-table thead .day-col { z-index: 4; }
     .num-cell {
       font-family: monospace;
       font-weight: bold;
@@ -111,11 +97,6 @@
       color: #111;
       background: #fff;
     }
-    
-    .num-cell.evening {
-      color: #008000;
-    }
-
     .mobile-hint {
       text-align: center;
       font-size: 11px;
@@ -129,12 +110,10 @@
 
 <div class="container">
   <div class="header">SPECIAL THAI TWO DIGIT NUMBERS CALENDAR</div>
-  
   <div class="toggle-buttons">
-    <button class="toggle-btn active" onclick="switchView('morning', this)">☀️ နံနက် (9:30 AM)</button>
-    <button class="toggle-btn" onclick="switchView('evening', this)">🌙 ညနေ (4:30 PM)</button>
+    <button class="toggle-btn active">☀️ နံနက် (9:30 AM)</button>
+    <button class="toggle-btn">🌙 ညနေ (4:30 PM)</button>
   </div>
-
   <div class="table-wrapper">
     <table class="trade-table" id="calendarTable">
       <thead>
@@ -145,67 +124,45 @@
       <tbody id="tableBody"></tbody>
     </table>
   </div>
-  
-  <div class="mobile-hint">📱 ဇယားကျယ်သဖြင့် ညာဘက်သို့ လက်နဲ့ဆွဲကြည့်ပါ</div>
+  <div class="mobile-hint"> ဇယားကျယ်သဖြင့် ညာဘက်သို့ လက်နဲ့ဆွဲကြည့်ပါ</div>
 </div>
 
 <script>
-  let currentView = 'morning';
-  
-  const myanDayNames = ['','တနင်္လာ', 'အင်္ဂါ', 'ဗုဒ္ဓဟူး', 'ကြာသပတေး', 'သောကြာ'];
   const TOTAL_ROWS = 20;
   const MAX_COLS = 60;
 
-  // ✅ ကော်လံ ခေါင်းစဉ် ၁-၆၀ ထည့်ခြင်း
+  // ကော်လံ ခေါင်းစဉ် ၁-၆၀
   const headerRow = document.getElementById('headerRow');
   for(let i=1; i<=MAX_COLS; i++) {
     headerRow.innerHTML += `<th>${i}</th>`;
   }
 
-  function switchView(view, btn) {
-    currentView = view;
-    document.querySelectorAll('.toggle-btn').forEach(b => b.classList.remove('active'));
-    btn.classList.add('active');
-    buildTable();
-  }
-
-  function buildTable() {
-    const tbody = document.getElementById('tableBody');
-    tbody.innerHTML = '';
+  // Table ဆောက်ခြင်း
+  const tbody = document.getElementById('tableBody');
+  
+  for(let row=1; row<=TOTAL_ROWS; row++) {
+    const tr = document.createElement('tr');
     
-    // ✅ ROW 1-20 အထိ ဖြည့်ခြင်း
-    for(let row=1; row<=TOTAL_ROWS; row++) {
-      const tr = document.createElement('tr');
+    // ပထမကော်လံ (DAY Label)
+    const dayTd = document.createElement('td');
+    dayTd.className = 'day-col';
+    dayTd.innerHTML = `${row}<br><small style="font-size:9px">တနင်္လာ</small>`;
+    tr.appendChild(dayTd);
+    
+    // ဂဏန်းများ (Column 1-60)
+    for(let col=1; col<=MAX_COLS; col++) {
+      const td = document.createElement('td');
+      td.className = 'num-cell';
       
-      // ပထမကော်လံ (DAY Label) - 1-20
-      const dayTd = document.createElement('td');
-      dayTd.className = 'day-col';
-      dayTd.innerHTML = `${row}<br><small style="font-size:9px">တနင်္လာ</small>`;
-      tr.appendChild(dayTd);
+      // ✅ Formula: value = (col-1) × 20 + row
+      const value = (col - 1) * 20 + row;
+      td.textContent = String(value).padStart(2, '0');
       
-      // ကော်လံ ၁ မှာ 01-20 အထိ ဖြည့်ခြင်း
-      // Column 1 = row number (01, 02, 03...20)
-      for(let col=1; col<=MAX_COLS; col++) {
-        const td = document.createElement('td');
-        td.className = 'num-cell' + (currentView === 'evening' ? ' evening' : '');
-        
-        if(col === 1) {
-          // ✅ Column 1 မှာ Row Number ထည့်မယ် (01, 02, 03...20)
-          td.textContent = String(row).padStart(2, '0');
-        } else {
-          // ကျန်တဲ့ column တွေကို အလွတ်ထားမယ်
-          td.textContent = '';
-        }
-        
-        tr.appendChild(td);
-      }
-      
-      tbody.appendChild(tr);
+      tr.appendChild(td);
     }
+    
+    tbody.appendChild(tr);
   }
-
-  // Page load ဖြစ်တာနဲ့ Table ကို ဆောက်မယ်
-  buildTable();
 </script>
 
 </body>
