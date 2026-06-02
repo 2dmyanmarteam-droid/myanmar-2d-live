@@ -27,6 +27,18 @@
       font-weight: bold;
       font-size: 15px;
     }
+    .month-section {
+      background: #003366;
+      color: #fff;
+      text-align: center;
+      padding: 8px;
+      font-weight: bold;
+      font-size: 14px;
+      margin-top: 0;
+    }
+    .month-section.next-month {
+      background: #666;
+    }
     .toggle-buttons {
       display: flex;
       background: #f0f0f0;
@@ -87,6 +99,9 @@
       min-width: 90px;
       text-align: center !important;
     }
+    .day-name-col.future {
+      background: #888;
+    }
     .row-num-col {
       position: sticky;
       left: 90px;
@@ -97,6 +112,10 @@
       min-width: 50px;
       text-align: center !important;
       border-right: 2px solid #003366;
+    }
+    .row-num-col.future {
+      background: #f0f0f0;
+      color: #888;
     }
     .trade-table thead .day-name-col,
     .trade-table thead .row-num-col { 
@@ -113,6 +132,10 @@
     }
     .num-cell.evening {
       color: #188038;
+    }
+    .empty-cell {
+      background: #f9f9f9;
+      color: #ccc;
     }
     .mobile-hint {
       text-align: center;
@@ -136,22 +159,25 @@
       <thead>
         <tr id="headerRow">
           <th class="day-name-col">DAY</th>
-          <th class="row-num-col"></th>
+          <th class="row-num-col">Row</th>
         </tr>
       </thead>
       <tbody id="tableBody"></tbody>
     </table>
   </div>
-  <div class="mobile-hint">📱 ဇယားကျယ်သဖြင့် ညာဘက်သို့ လက်နဲ့ဆွဲကြည့်ပါ</div>
+  <div class="mobile-hint"> ဇယားကျယ်သဖြင့် ာဘက်သို့ လက်နဲ့ဆွဲကြည့်ပါ</div>
 </div>
 
 <script>
   const dayNames = ['တနင်္လာ', 'အင်္ဂါ', 'ဗုဒ္ဓဟူး', 'ကြာသပတေး', 'သောကြာ'];
-  const TOTAL_ROWS = 20;
+  const CURRENT_MONTH_ROWS = 20; // လက်ရှိလ (ဇွန်) - Row 20
+  const FUTURE_MONTHS = 5; // နောက် 5 လ
+  const ROWS_PER_MONTH = 20;
+  const TOTAL_ROWS = CURRENT_MONTH_ROWS + (FUTURE_MONTHS * ROWS_PER_MONTH); // 120 rows
   const MAX_COLS = 30;
   let currentView = 'morning';
 
-  // ကော်လံ ခေါင်းစဉ် 1-30
+  // ကော်လံ ေါင်းစဉ် 1-30
   const headerRow = document.getElementById('headerRow');
   for(let i=1; i<=MAX_COLS; i++) {
     headerRow.innerHTML += `<th>${i}</th>`;
@@ -171,25 +197,36 @@
     for(let row=1; row<=TOTAL_ROWS; row++) {
       const tr = document.createElement('tr');
       
-      // ✅ Column A: နေ့အမည် (Mon-Fri လှည့်, ပိတ်ရက်မပါ)
+      const isCurrentMonth = row <= CURRENT_MONTH_ROWS;
+      
+      // ✅ Column A: နေ့အမည်
       const dayTd = document.createElement('td');
-      dayTd.className = 'day-name-col';
+      dayTd.className = 'day-name-col' + (isCurrentMonth ? '' : ' future');
       const dayIndex = (row - 1) % 5;
       dayTd.textContent = dayNames[dayIndex];
       tr.appendChild(dayTd);
       
-      // ✅ Column B: Row နံပါတ် (1-20)
+      // ✅ Column B: Row နံပါတ်
       const rowTd = document.createElement('td');
-      rowTd.className = 'row-num-col';
+      rowTd.className = 'row-num-col' + (isCurrentMonth ? '' : ' future');
       rowTd.textContent = row;
       tr.appendChild(rowTd);
       
-      // ✅ Column 1-30: ဂဏန်းများ (formula: row + (col-1)×20)
+      // ✅ Column 1-30: ဂန်းများ
       for(let col=1; col<=MAX_COLS; col++) {
         const td = document.createElement('td');
-        const value = row + (col - 1) * 20;
-        td.className = 'num-cell' + (currentView === 'evening' ? ' evening' : '');
-        td.textContent = String(value).padStart(2, '0');
+        
+        if(isCurrentMonth) {
+          // ✅ လက်ရှိလ - ဂဏန်းပြမယ်
+          const value = row + (col - 1) * 20;
+          td.className = 'num-cell' + (currentView === 'evening' ? ' evening' : '');
+          td.textContent = String(value).padStart(2, '0');
+        } else {
+          // ✅ နောက် 5 လ - အလွတ်
+          td.className = 'empty-cell';
+          td.textContent = '';
+        }
+        
         tr.appendChild(td);
       }
       
