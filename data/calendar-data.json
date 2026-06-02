@@ -46,6 +46,7 @@
       font-weight: bold;
       cursor: pointer;
       border-radius: 6px;
+      transition: all 0.2s;
     }
     .toggle-btn.active {
       background: #003366;
@@ -58,7 +59,7 @@
     .trade-table {
       border-collapse: collapse;
       width: 100%;
-      min-width: 1400px;
+      min-width: 1800px;
       font-size: 11px;
     }
     .trade-table th, .trade-table td {
@@ -66,13 +67,13 @@
       padding: 4px 3px;
       text-align: center;
       white-space: nowrap;
-      min-width: 32px;
+      min-width: 28px;
     }
     .trade-table th {
       background: #003366;
       color: #fff;
       font-weight: bold;
-      height: 30px;
+      height: 28px;
       font-size: 11px;
       position: sticky;
       top: 0;
@@ -85,7 +86,7 @@
       color: #fff;
       font-weight: bold;
       z-index: 3;
-      min-width: 70px;
+      min-width: 80px;
       text-align: center !important;
       border-right: 2px solid #002244;
     }
@@ -94,8 +95,15 @@
       font-family: monospace;
       font-weight: bold;
       font-size: 11px;
-      color: #111;
+      color: #d93025;
       background: #fff;
+    }
+    .num-cell.evening {
+      color: #188038;
+    }
+    .empty-cell {
+      background: #f5f5f5;
+      color: #ccc;
     }
     .mobile-hint {
       text-align: center;
@@ -111,8 +119,8 @@
 <div class="container">
   <div class="header">SPECIAL THAI TWO DIGIT NUMBERS CALENDAR</div>
   <div class="toggle-buttons">
-    <button class="toggle-btn active">☀️ နံနက် (9:30 AM)</button>
-    <button class="toggle-btn">🌙 ညနေ (4:30 PM)</button>
+    <button class="toggle-btn active" onclick="switchView('morning', this)">☀️ နံနက် (9:30 AM)</button>
+    <button class="toggle-btn" onclick="switchView('evening', this)">🌙 ညနေ (4:30 PM)</button>
   </div>
   <div class="table-wrapper">
     <table class="trade-table" id="calendarTable">
@@ -124,12 +132,14 @@
       <tbody id="tableBody"></tbody>
     </table>
   </div>
-  <div class="mobile-hint"> ဇယားကျယ်သဖြင့် ညာဘက်သို့ လက်နဲ့ဆွဲကြည့်ပါ</div>
+  <div class="mobile-hint">📱 ဇယားကျယ်သဖြင့် ညာဘက်သို့ လက်နဲ့ဆွဲကြည့်ပါ</div>
 </div>
 
 <script>
+  const dayNames = ['တနင်္လာ', 'အင်္ဂါ', 'ဗုဒ္ဓဟူး', 'ကြာသပတေး', 'သောကြာ'];
   const TOTAL_ROWS = 20;
   const MAX_COLS = 60;
+  let currentView = 'morning';
 
   // ကော်လံ ခေါင်းစဉ် ၁-၆၀
   const headerRow = document.getElementById('headerRow');
@@ -137,32 +147,60 @@
     headerRow.innerHTML += `<th>${i}</th>`;
   }
 
-  // Table ဆောက်ခြင်း
-  const tbody = document.getElementById('tableBody');
-  
-  for(let row=1; row<=TOTAL_ROWS; row++) {
-    const tr = document.createElement('tr');
-    
-    // ပထမကော်လံ (DAY Label)
-    const dayTd = document.createElement('td');
-    dayTd.className = 'day-col';
-    dayTd.innerHTML = `${row}<br><small style="font-size:9px">တနင်္လာ</small>`;
-    tr.appendChild(dayTd);
-    
-    // ဂဏန်းများ (Column 1-60)
-    for(let col=1; col<=MAX_COLS; col++) {
-      const td = document.createElement('td');
-      td.className = 'num-cell';
-      
-      // ✅ Formula: value = (col-1) × 20 + row
-      const value = (col - 1) * 20 + row;
-      td.textContent = String(value).padStart(2, '0');
-      
-      tr.appendChild(td);
-    }
-    
-    tbody.appendChild(tr);
+  // နံနက်/ညနေ ပြောင်းလဲခြင်း
+  function switchView(view, btn) {
+    currentView = view;
+    document.querySelectorAll('.toggle-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    buildTable();
   }
+
+  // Table ဆောက်ခြင်း
+  function buildTable() {
+    const tbody = document.getElementById('tableBody');
+    tbody.innerHTML = '';
+    
+    for(let row=1; row<=TOTAL_ROWS; row++) {
+      const tr = document.createElement('tr');
+      
+      // ပထမကော်လံ (DAY Label)
+      const dayTd = document.createElement('td');
+      dayTd.className = 'day-col';
+      
+      // ✅ Row 1 = နေ့အမည်မပါ
+      // ✅ Row 2-20 = အစဉ်လိုက် Mon-Fri
+      if(row === 1) {
+        dayTd.innerHTML = `${row}`;
+      } else {
+        const dayIndex = (row - 2) % 5; // 0-4
+        dayTd.innerHTML = `${row}<br><small style="font-size:9px">${dayNames[dayIndex]}</small>`;
+      }
+      tr.appendChild(dayTd);
+      
+      // ဂန်းများ (Column 1-60)
+      for(let col=1; col<=MAX_COLS; col++) {
+        const td = document.createElement('td');
+        
+        if(col === 1) {
+          // Column 1 မှာ row နံပါတ်
+          td.className = 'num-cell' + (currentView === 'evening' ? ' evening' : '');
+          td.textContent = String(row).padStart(2, '0');
+        } else {
+          // ✅ Column 2-60: Formula = (col-1) × 20 + row
+          const value = (col - 1) * 20 + row;
+          td.className = 'num-cell' + (currentView === 'evening' ? ' evening' : '');
+          td.textContent = String(value).padStart(2, '0');
+        }
+        
+        tr.appendChild(td);
+      }
+      
+      tbody.appendChild(tr);
+    }
+  }
+
+  // Page load ဖြစ်တာနဲ့ Table ကို ဆောက်မယ်
+  buildTable();
 </script>
 
 </body>
