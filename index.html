@@ -57,46 +57,57 @@
     .trade-table {
       border-collapse: collapse;
       width: 100%;
-      min-width: 1800px;
+      min-width: 1200px;
       font-size: 11px;
     }
     .trade-table th, .trade-table td {
       border: 1px solid #c0d0e0;
-      padding: 4px 3px;
+      padding: 6px 4px;
       text-align: center;
       white-space: nowrap;
-      min-width: 28px;
+      min-width: 50px;
     }
     .trade-table th {
       background: #003366;
       color: #fff;
       font-weight: bold;
-      height: 28px;
+      height: 30px;
       font-size: 11px;
       position: sticky;
       top: 0;
       z-index: 2;
     }
-    .day-col {
+    .day-name-col {
       position: sticky;
       left: 0;
       background: #003366;
       color: #fff;
       font-weight: bold;
       z-index: 3;
-      min-width: 80px;
+      min-width: 100px;
       text-align: center !important;
-      border-right: 2px solid #002244;
     }
-    .day-col.odd-row {
+    .row-num-col {
+      position: sticky;
+      left: 100px;
       background: #fff;
       color: #003366;
+      font-weight: bold;
+      z-index: 3;
+      min-width: 50px;
+      text-align: center !important;
+      border-right: 2px solid #003366;
     }
-    .trade-table thead .day-col { z-index: 4; }
+    .trade-table thead .day-name-col,
+    .trade-table thead .row-num-col { 
+      z-index: 4; 
+      background: #003366;
+      color: #fff;
+    }
     .num-cell {
       font-family: monospace;
       font-weight: bold;
-      font-size: 11px;
+      font-size: 12px;
       color: #d93025;
       background: #fff;
     }
@@ -124,7 +135,8 @@
     <table class="trade-table" id="calendarTable">
       <thead>
         <tr id="headerRow">
-          <th class="day-col">DAY</th>
+          <th class="day-name-col">နေ့</th>
+          <th class="row-num-col">Row</th>
         </tr>
       </thead>
       <tbody id="tableBody"></tbody>
@@ -134,12 +146,12 @@
 </div>
 
 <script>
-  // ✅ Mon=0, Tue=1, Wed=2, Thu=3, Fri=4, Sat=5(holiday), Sun=6(holiday)
   const dayNames = ['တနင်္လာ', 'အင်္ဂါ', 'ဗုဒ္ဓဟူး', 'ကြာသပတေး', 'သောကြာ'];
   const TOTAL_ROWS = 20;
-  const MAX_COLS = 60;
+  const MAX_COLS = 30; // Column 3-32 (ဂဏန်း ၃၀ လုံး)
   let currentView = 'morning';
 
+  // ကော်လံ ခေါင်းစဉ် (Column 1-30)
   const headerRow = document.getElementById('headerRow');
   for(let i=1; i<=MAX_COLS; i++) {
     headerRow.innerHTML += `<th>${i}</th>`;
@@ -159,26 +171,23 @@
     for(let row=1; row<=TOTAL_ROWS; row++) {
       const tr = document.createElement('tr');
       
+      // Column A: နေ့အမည် (Mon-Fri လှည့်)
       const dayTd = document.createElement('td');
-      dayTd.className = 'day-col';
-      if(row % 2 === 0) dayTd.classList.add('odd-row');
-      
-      // ✅ (row-1) % 7 = 0-4 Mon-Fri, 5-6 Sat-Sun(holiday)
-      const dayOfWeek = (row - 1) % 7;
-      
-      if(dayOfWeek < 5) {
-        // ✅ အလုပ်လုပ်ရက် (Mon-Fri)
-        dayTd.innerHTML = `${row}<br><small style="font-size:9px">${dayNames[dayOfWeek]}</small>`;
-      } else {
-        // ✅ ပိတ်ရက် (Sat-Sun) - နေ့အမည်မပါ
-        dayTd.innerHTML = `${row}`;
-      }
-      
+      dayTd.className = 'day-name-col';
+      const dayIndex = (row - 1) % 5; // 0-4
+      dayTd.textContent = dayNames[dayIndex];
       tr.appendChild(dayTd);
       
+      // Column B: Row နံပါတ်
+      const rowTd = document.createElement('td');
+      rowTd.className = 'row-num-col';
+      rowTd.textContent = row;
+      tr.appendChild(rowTd);
+      
+      // Column C-∞: ဂဏန်းများ (formula: row + (col-1)×20)
       for(let col=1; col<=MAX_COLS; col++) {
         const td = document.createElement('td');
-        const value = (col - 1) * 20 + row;
+        const value = row + (col - 1) * 20;
         td.className = 'num-cell' + (currentView === 'evening' ? ' evening' : '');
         td.textContent = String(value).padStart(2, '0');
         tr.appendChild(td);
