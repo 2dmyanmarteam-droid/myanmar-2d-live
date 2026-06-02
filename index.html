@@ -57,7 +57,7 @@
     .trade-table {
       border-collapse: collapse;
       width: 100%;
-      min-width: 2000px; /* ဂဏန်းများများအတွက် */
+      min-width: 2000px;
       font-size: 10px;
     }
     .trade-table th, .trade-table td {
@@ -146,19 +146,23 @@
       <tbody id="tableBody"></tbody>
     </table>
   </div>
-  <div class="mobile-hint">📱 ဇယားကျယ်သဖြင့် ညာဘက်သို့ လက်နဲ့ဆွဲကြည့်ပါ</div>
+  <div class="mobile-hint"> ဇယားကျယ်သဖြင့် ညာဘက်သို့ လက်နဲ့ဆွဲကြည့်ပါ</div>
 </div>
 
 <script>
-  const dayNames = ['တနင်္လာ', 'အင်္ဂါ', 'ဗုဒ္ဓဟူး', 'ကြာသပတေး', 'သောကြာ'];
-  const CURRENT_MONTH_ROWS = 20; // လက်ရှိလ (ဂဏန်းပြည့်)
-  const FUTURE_MONTHS = 5; // နောက်  လ (အလွတ်)
+  const dayNames = ['တနင်္လာ', 'အင်္ဂါ', 'ုဒ္ဓဟူး', 'ကြာသပတေး', 'သောကြာ'];
+  const CURRENT_MONTH_ROWS = 20;
+  const FUTURE_MONTHS = 5;
   const ROWS_PER_MONTH = 20;
   const TOTAL_ROWS = CURRENT_MONTH_ROWS + (FUTURE_MONTHS * ROWS_PER_MONTH); // 120 rows
-  const MAX_COLS = 60; // ဂဏန်း ၀ လုံး (အကန့်အသတ်မရှိ လိုချင်ရင် ၁၀၀+ ထားနိုင်တယ်)
+  
+  // ✅ Column 100 အထိ (ဂဏန်းအသစ်တွေ တိုးလာရင် ဆက်ပြမယ်)
+  // လိုအပ်ရင် 200, 300... ထပ်တိုးနိုင်တယ်
+  const MAX_COLS = 100;
+  
   let currentView = 'morning';
 
-  // ကော်လံ ခေါင်းစဉ် 1-60
+  // ကော်လံ ခေါင်းစဉ် 1-100
   const headerRow = document.getElementById('headerRow');
   for(let i=1; i<=MAX_COLS; i++) {
     headerRow.innerHTML += `<th>${i}</th>`;
@@ -193,17 +197,17 @@
       rowTd.textContent = row;
       tr.appendChild(rowTd);
       
-      // ✅ Column 1-60: ဂဏန်းများ
+      // ✅ Column 1-100: ဂဏန်းများ
       for(let col=1; col<=MAX_COLS; col++) {
         const td = document.createElement('td');
         
         if(isCurrentMonth) {
-          // ✅ လက်ရှိလ (Row 1-20) - ဂဏန်းအကုန်ပြည့်
+          // ✅ Row 1-20: ဂဏန်းအကုန်ပြည့်
           const value = row + (col - 1) * 20;
           td.className = 'num-cell' + (currentView === 'evening' ? ' evening' : '');
           td.textContent = String(value).padStart(2, '0');
         } else {
-          // ✅ နောက် ၅ လ (Row 21-120) - အလွတ်
+          // ✅ Row 21-120 (နောက် ၅ လ): အလွတ်
           td.className = 'empty-cell';
           td.textContent = '';
         }
