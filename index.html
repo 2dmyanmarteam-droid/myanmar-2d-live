@@ -84,12 +84,12 @@
       color: #fff;
       font-weight: bold;
       z-index: 3;
-      min-width: 100px;
+      min-width: 90px;
       text-align: center !important;
     }
     .row-num-col {
       position: sticky;
-      left: 100px;
+      left: 90px;
       background: #fff;
       color: #003366;
       font-weight: bold;
@@ -135,8 +135,8 @@
     <table class="trade-table" id="calendarTable">
       <thead>
         <tr id="headerRow">
-          <th class="day-name-col">နေ့</th>
-          <th class="row-num-col">Row</th>
+          <th class="day-name-col">DAY</th>
+          <th class="row-num-col"></th>
         </tr>
       </thead>
       <tbody id="tableBody"></tbody>
@@ -148,10 +148,10 @@
 <script>
   const dayNames = ['တနင်္လာ', 'အင်္ဂါ', 'ဗုဒ္ဓဟူး', 'ကြာသပတေး', 'သောကြာ'];
   const TOTAL_ROWS = 20;
-  const MAX_COLS = 30; // Column 3-32 (ဂဏန်း ၃၀ လုံး)
+  const MAX_COLS = 30;
   let currentView = 'morning';
 
-  // ကော်လံ ခေါင်းစဉ် (Column 1-30)
+  // ကော်လံ ခေါင်းစဉ် 1-30
   const headerRow = document.getElementById('headerRow');
   for(let i=1; i<=MAX_COLS; i++) {
     headerRow.innerHTML += `<th>${i}</th>`;
@@ -171,20 +171,20 @@
     for(let row=1; row<=TOTAL_ROWS; row++) {
       const tr = document.createElement('tr');
       
-      // Column A: နေ့အမည် (Mon-Fri လှည့်)
+      // ✅ Column A: နေ့အမည် (Mon-Fri လှည့်, ပိတ်ရက်မပါ)
       const dayTd = document.createElement('td');
       dayTd.className = 'day-name-col';
-      const dayIndex = (row - 1) % 5; // 0-4
+      const dayIndex = (row - 1) % 5;
       dayTd.textContent = dayNames[dayIndex];
       tr.appendChild(dayTd);
       
-      // Column B: Row နံပါတ်
+      // ✅ Column B: Row နံပါတ် (1-20)
       const rowTd = document.createElement('td');
       rowTd.className = 'row-num-col';
       rowTd.textContent = row;
       tr.appendChild(rowTd);
       
-      // Column C-∞: ဂဏန်းများ (formula: row + (col-1)×20)
+      // ✅ Column 1-30: ဂဏန်းများ (formula: row + (col-1)×20)
       for(let col=1; col<=MAX_COLS; col++) {
         const td = document.createElement('td');
         const value = row + (col - 1) * 20;
