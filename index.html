@@ -150,15 +150,13 @@
 </div>
 
 <script>
-  const JSON_URL = "https://raw.githubusercontent.com/2dmyanmarteam-droid/myanmar-2d-live/main/data/calendar-data.json";
-  let currentData = {};
   let currentView = 'morning';
   
   const myanDayNames = ['','တနင်္လာ', 'အင်္ဂါ', 'ဗုဒ္ဓဟူး', 'ကြာသပတေး', 'သောကြာ'];
   const TOTAL_ROWS = 20;
   const MAX_COLS = 60;
 
-  // ✅ ကော်လံ ေါင်းစဉ် -၆၀ ထည့်ခြင်း
+  // ✅ ကော်လံ ခေါင်းစဉ် ၁-၆၀ ထည့်ခြင်း
   const headerRow = document.getElementById('headerRow');
   for(let i=1; i<=MAX_COLS; i++) {
     headerRow.innerHTML += `<th>${i}</th>`;
@@ -175,56 +173,30 @@
     const tbody = document.getElementById('tableBody');
     tbody.innerHTML = '';
     
-    // ✅ အလုပ်လုပ်ရက်များ စုဆောင်းခြင်း (စနေ/တနင်္ဂနွေ ြုတ်)
-    let workingDays = [];
-    const year = 2026;
-    const month = 5; // June
-    const daysInMonth = new Date(year, month + 1, 0).getDate();
-
-    for(let d=1; d<=daysInMonth; d++) {
-      const dateObj = new Date(year, month, d);
-      const dow = dateObj.getDay();
-      
-      // စနေ(6) နဲ့ တနင်္ဂနွေ(0) ဖြုတ်
-      if(dow === 0 || dow === 6) continue;
-      
-      const dateKey = `${year}-${String(month+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
-      const info = currentData[dateKey] || {};
-      
-      let numbers = (currentView === 'morning') 
-        ? (info.morning?.set || []) 
-        : (info.evening?.set || []);
-      
-      workingDays.push({ day: d, dow: dow, numbers: numbers });
-    }
-    
-    // ✅ ၂၀ ROW အထိ ပြခြင်း - CIRCULAR (ပြန်လည်အသုံးပြု)
-    const actualDays = workingDays.length;
-    
-    if(actualDays === 0) {
-      tbody.innerHTML = '<tr><td colspan="61" style="padding:20px">ဒေတာ မရှိသေးပါ</td></tr>';
-      return;
-    }
-    
-    for(let row=0; row<TOTAL_ROWS; row++) {
-      // ✅ CIRCULAR: row ကို actualDays နဲ့ စားပြီး အကြွင်းယူ
-      // row=0 → 0%4=0, row=4 → 4%4=0, row=5 → 5%4=1...
-      const dataIndex = row % actualDays;
-      const dayData = workingDays[dataIndex];
-      
+    // ✅ ROW 1-20 အထိ ဖြည့်ခြင်း
+    for(let row=1; row<=TOTAL_ROWS; row++) {
       const tr = document.createElement('tr');
       
-      // ပထမကော်လံ (DAY Label) - row+1 (1-20)
+      // ပထမကော်လံ (DAY Label) - 1-20
       const dayTd = document.createElement('td');
       dayTd.className = 'day-col';
-      dayTd.innerHTML = `${row + 1}<br><small style="font-size:9px">${myanDayNames[dayData.dow]}</small>`;
+      dayTd.innerHTML = `${row}<br><small style="font-size:9px">တနင်္လာ</small>`;
       tr.appendChild(dayTd);
       
-      // ဏန်းများ (1-60)
+      // ကော်လံ ၁ မှာ 01-20 အထိ ဖြည့်ခြင်း
+      // Column 1 = row number (01, 02, 03...20)
       for(let col=1; col<=MAX_COLS; col++) {
         const td = document.createElement('td');
         td.className = 'num-cell' + (currentView === 'evening' ? ' evening' : '');
-        td.textContent = dayData.numbers[col-1] || '';
+        
+        if(col === 1) {
+          // ✅ Column 1 မှာ Row Number ထည့်မယ် (01, 02, 03...20)
+          td.textContent = String(row).padStart(2, '0');
+        } else {
+          // ကျန်တဲ့ column တွေကို အလွတ်ထားမယ်
+          td.textContent = '';
+        }
+        
         tr.appendChild(td);
       }
       
@@ -232,13 +204,8 @@
     }
   }
 
-  fetch(JSON_URL)
-    .then(res => res.json())
-    .then(data => {
-      currentData = data;
-      buildTable();
-    })
-    .catch(err => console.error("Error:", err));
+  // Page load ဖြစ်တာနဲ့ Table ကို ဆောက်မယ်
+  buildTable();
 </script>
 
 </body>
