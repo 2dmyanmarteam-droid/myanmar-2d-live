@@ -1,5 +1,18 @@
 {
   "year": 2026,
   "description": "Golden Myanmar 2D - Historical Results",
-  "months": {}
+  "months": {
+    "06": {
+      "name": "June",
+      "days": {
+        "04": {
+          "12:01 PM": "--",
+          "04:30 PM": "--",
+          "status": "closed",
+          "updated_at": "2026-06-04T06:18:22.119Z",
+          "note": "No data - Market closed"
+        }
+      }
+    }
+  }
 }
