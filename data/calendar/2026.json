@@ -1,0 +1,191 @@
+<style>
+.calendar-container {
+  max-width: 900px;
+  margin: 20px auto;
+  background: linear-gradient(135deg, #1a1a2e 0%, #0f0f1e 100%);
+  border-radius: 15px;
+  padding: 20px;
+  box-shadow: 0 10px 40px rgba(255, 215, 0, 0.3);
+  border: 3px solid #FFD700;
+  font-family: 'Arial', sans-serif;
+}
+
+.calendar-title {
+  text-align: center;
+  color: #FFD700;
+  font-size: 28px;
+  font-weight: bold;
+  margin-bottom: 20px;
+}
+
+.calendar-nav {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.calendar-nav button {
+  background: linear-gradient(135deg, #FFD700 0%, #FFA500 100%);
+  border: none;
+  padding: 10px 20px;
+  border-radius: 8px;
+  color: #1a1a2e;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.calendar-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 10px;
+}
+
+.calendar-day-header {
+  background: rgba(255, 215, 0, 0.2);
+  color: #FFD700;
+  padding: 10px;
+  text-align: center;
+  font-weight: bold;
+  border-radius: 5px;
+}
+
+.calendar-day {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 215, 0, 0.2);
+  border-radius: 8px;
+  padding: 10px;
+  min-height: 80px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.calendar-day:hover {
+  background: rgba(255, 215, 0, 0.1);
+  transform: translateY(-2px);
+}
+
+.calendar-day-number {
+  font-weight: bold;
+  color: #FFFFFF;
+  margin-bottom: 5px;
+}
+
+.calendar-day-noon {
+  font-size: 12px;
+  color: #00E676;
+  margin: 2px 0;
+}
+
+.calendar-day-evening {
+  font-size: 12px;
+  color: #4ECDC4;
+  margin: 2px 0;
+}
+
+.calendar-day.closed {
+  opacity: 0.5;
+  background: rgba(136, 136, 153, 0.1);
+}
+</style>
+
+<div class="calendar-container">
+  <div class="calendar-title">📅 GOLDEN MYANMAR 2D CALENDAR</div>
+  
+  <div class="calendar-nav">
+    <button onclick="changeMonth(-1)">◀ Previous</button>
+    <h2 id="currentMonth" style="color: #FFD700; margin: 0;">June 2026</h2>
+    <button onclick="changeMonth(1)">Next ▶</button>
+  </div>
+  
+  <div class="calendar-grid" id="calendarGrid">
+    <!-- Calendar will be generated here -->
+  </div>
+</div>
+
+<script>
+const CALENDAR_URL = 'https://raw.githubusercontent.com/2dmyanmarteam-droid/myanmar-2d-live/main/data/calendar';
+
+let currentYear = 2026;
+let currentMonth = 6; // June
+let calendarData = {};
+
+async function loadCalendar() {
+  const grid = document.getElementById('calendarGrid');
+  const monthTitle = document.getElementById('currentMonth');
+  
+  grid.innerHTML = '<div style="grid-column: 1/-1; text-align: center; color: #FFD700;">Loading...</div>';
+  
+  try {
+    // Load year data
+    if (!calendarData[currentYear]) {
+      const response = await fetch(`${CALENDAR_URL}/${currentYear}.json?t=${Date.now()}`);
+      if (response.ok) {
+        calendarData[currentYear] = await response.json();
+      } else {
+        throw new Error('No data');
+      }
+    }
+    
+    const monthKey = String(currentMonth).padStart(2, '0');
+    const monthNames = ["January", "February", "March", "April", "May", "June", 
+                        "July", "August", "September", "October", "November", "December"];
+    
+    monthTitle.textContent = `${monthNames[currentMonth - 1]} ${currentYear}`;
+    
+    const monthData = calendarData[currentYear].months[monthKey];
+    const daysInMonth = new Date(currentYear, currentMonth, 0).getDate();
+    
+    // Day headers
+    const dayHeaders = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+    let html = '';
+    dayHeaders.forEach(day => {
+      html += `<div class="calendar-day-header">${day}</div>`;
+    });
+    
+    // Empty cells for days before start of month
+    const firstDay = new Date(currentYear, currentMonth - 1, 1).getDay();
+    for (let i = 0; i < firstDay; i++) {
+      html += '<div></div>';
+    }
+    
+    // Days
+    for (let day = 1; day <= daysInMonth; day++) {
+      const dayKey = String(day).padStart(2, '0');
+      const dayData = monthData.days[dayKey];
+      
+      const noon = dayData && dayData["12:01 PM"] !== "--" ? dayData["12:01 PM"] : "--";
+      const evening = dayData && dayData["04:30 PM"] !== "--" ? dayData["04:30 PM"] : "--";
+      const isClosed = dayData && dayData.status === "closed";
+      
+      html += `
+        <div class="calendar-day ${isClosed ? 'closed' : ''}">
+          <div class="calendar-day-number">${day}</div>
+          <div class="calendar-day-noon">12:01: ${noon}</div>
+          <div class="calendar-day-evening">04:30: ${evening}</div>
+        </div>
+      `;
+    }
+    
+    grid.innerHTML = html;
+    
+  } catch(e) {
+    console.log("Error:", e);
+    grid.innerHTML = '<div style="grid-column: 1/-1; text-align: center; color: #FF6B6B;">No data available</div>';
+  }
+}
+
+function changeMonth(delta) {
+  currentMonth += delta;
+  if (currentMonth > 12) {
+    currentMonth = 1;
+    currentYear++;
+  } else if (currentMonth < 1) {
+    currentMonth = 12;
+    currentYear--;
+  }
+  loadCalendar();
+}
+
+document.addEventListener('DOMContentLoaded', loadCalendar);
+</script>
