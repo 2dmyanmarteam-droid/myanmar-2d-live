@@ -6,11 +6,10 @@
       "name": "June",
       "days": {
         "04": {
-          "12:01 PM": "--",
+          "12:01 PM": "05",
           "04:30 PM": "--",
-          "status": "closed",
-          "updated_at": "2026-06-04T06:30:09.057Z",
-          "note": "No data - Market closed"
+          "status": "open",
+          "updated_at": "2026-06-04T06:31:45.322Z"
         }
       }
     }
