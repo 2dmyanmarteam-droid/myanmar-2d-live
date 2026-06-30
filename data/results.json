@@ -1,5 +1,5 @@
 {
-  "last_updated": "2026-06-30T10:00:54.423Z",
+  "last_updated": "2026-06-30T10:01:54.184Z",
   "results": {
     "11:00 AM": {
       "set": "1581.92",
@@ -30,14 +30,14 @@
       "value": "91878.08",
       "twod": "48",
       "date": "2026-06-30",
-      "is_locked": false,
-      "updated_at": "2026-06-30T10:00:54.423Z"
+      "is_locked": true,
+      "locked_at": "2026-06-30T10:01:54.184Z"
     }
   },
   "latest_result": {
     "set": "1591.24",
     "value": "91878.08",
     "twod": "48",
-    "updated_at": "2026-06-30T10:00:54.423Z"
+    "updated_at": "2026-06-30T10:01:54.184Z"
   }
 }
