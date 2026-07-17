@@ -1,43 +1,39 @@
 {
-  "last_updated": "2026-07-17T17:29:54.541Z",
+  "last_updated": "2026-07-17T17:30:54.285Z",
   "results": {
     "11:00 AM": {
-      "set": "1633.45",
-      "value": "41442.61",
-      "twod": "52",
+      "set": "--",
+      "value": "--",
+      "twod": "--",
       "date": "2026-07-17",
-      "is_locked": true,
-      "locked_at": "2026-07-17T04:32:56.856Z"
+      "is_locked": false
     },
     "12:01 PM": {
-      "set": "1636.05",
-      "value": "54283.25",
-      "twod": "53",
+      "set": "--",
+      "value": "--",
+      "twod": "--",
       "date": "2026-07-17",
-      "is_locked": true,
-      "locked_at": "2026-07-17T05:32:54.319Z"
+      "is_locked": false
     },
     "3:00 PM": {
-      "set": "1634.28",
-      "value": "75266.10",
-      "twod": "86",
+      "set": "--",
+      "value": "--",
+      "twod": "--",
       "date": "2026-07-17",
-      "is_locked": true,
-      "locked_at": "2026-07-17T08:32:54.819Z"
+      "is_locked": false
     },
     "4:30 PM": {
-      "set": "1639.04",
-      "value": "91803.80",
-      "twod": "43",
+      "set": "--",
+      "value": "--",
+      "twod": "--",
       "date": "2026-07-17",
-      "is_locked": true,
-      "locked_at": "2026-07-17T10:01:54.739Z"
+      "is_locked": false
     }
   },
   "latest_result": {
-    "set": "1639.04",
-    "value": "91803.80",
-    "twod": "43",
-    "updated_at": "2026-07-17T17:29:54.541Z"
+    "set": "--",
+    "value": "--",
+    "twod": "--",
+    "updated_at": "2026-07-17T17:30:54.285Z"
   }
 }
