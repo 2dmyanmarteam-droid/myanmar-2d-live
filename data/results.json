@@ -1,43 +1,39 @@
 {
-  "last_updated": "2026-10-26T17:29:54.580Z",
+  "last_updated": "2026-10-26T17:30:54.454Z",
   "results": {
     "11:00 AM": {
-      "set": "0.00",
-      "value": "0.00",
-      "twod": "00",
+      "set": "--",
+      "value": "--",
+      "twod": "--",
       "date": "2026-10-26",
-      "is_locked": true,
-      "locked_at": "2026-10-26T04:32:54.645Z"
+      "is_locked": false
     },
     "12:01 PM": {
-      "set": "0.00",
-      "value": "0.00",
-      "twod": "00",
+      "set": "--",
+      "value": "--",
+      "twod": "--",
       "date": "2026-10-26",
-      "is_locked": true,
-      "locked_at": "2026-10-26T05:32:54.334Z"
+      "is_locked": false
     },
     "3:00 PM": {
-      "set": "0.00",
-      "value": "0.00",
-      "twod": "00",
+      "set": "--",
+      "value": "--",
+      "twod": "--",
       "date": "2026-10-26",
-      "is_locked": true,
-      "locked_at": "2026-10-26T08:32:55.230Z"
+      "is_locked": false
     },
     "4:30 PM": {
-      "set": "0.00",
-      "value": "0.00",
-      "twod": "00",
+      "set": "--",
+      "value": "--",
+      "twod": "--",
       "date": "2026-10-26",
-      "is_locked": true,
-      "locked_at": "2026-10-26T10:01:54.958Z"
+      "is_locked": false
     }
   },
   "latest_result": {
-    "set": "0.00",
-    "value": "0.00",
-    "twod": "00",
-    "updated_at": "2026-10-26T17:29:54.580Z"
+    "set": "--",
+    "value": "--",
+    "twod": "--",
+    "updated_at": "2026-10-26T17:30:54.454Z"
   }
 }
