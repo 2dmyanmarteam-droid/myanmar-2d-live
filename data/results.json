@@ -1,5 +1,5 @@
 {
-  "last_updated": "2026-11-11T10:00:54.599Z",
+  "last_updated": "2026-11-11T10:01:54.341Z",
   "results": {
     "11:00 AM": {
       "set": "1504.35",
@@ -30,14 +30,14 @@
       "value": "56793.19",
       "twod": "13",
       "date": "2026-11-11",
-      "is_locked": false,
-      "updated_at": "2026-11-11T10:00:54.599Z"
+      "is_locked": true,
+      "locked_at": "2026-11-11T10:01:54.341Z"
     }
   },
   "latest_result": {
     "set": "1502.11",
     "value": "56793.19",
     "twod": "13",
-    "updated_at": "2026-11-11T10:00:54.599Z"
+    "updated_at": "2026-11-11T10:01:54.341Z"
   }
 }
